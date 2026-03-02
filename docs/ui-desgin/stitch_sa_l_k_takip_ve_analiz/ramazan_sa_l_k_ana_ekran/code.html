@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="tr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Yeşil Fenerli Ramazan Ana Ekranı</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#4C8C64", // Sage Green
+                        "primary-light": "#8FCB9B", // Soft Green
+                        "primary-dark": "#2E593F", // Darker Sage
+                        "accent": "#C1E1C1", // Pale Green
+                        "background-light": "#F5F9F5", // Very light greenish white
+                        "background-dark": "#1A2F23", // Dark green-black
+                        "sage-green": "#74A57F",
+                        "mint-soft": "#E8F5E9", // Very light green
+                        "cream": "#FFFFF0",
+                        "warm-cream": "#FDFFF5",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "2xl": "2rem", "full": "9999px"},
+                    backgroundImage: {
+                        'islamic-pattern': "url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%234C8C64' fill-opacity='0.05' fill-rule='evenodd'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/svg%3E\")",
+                    },
+                    animation: {
+                        'swing': 'swing 3s ease-in-out infinite alternate',
+                        'glow-pulse': 'glow-pulse 4s ease-in-out infinite alternate',
+                    },
+                    keyframes: {
+                        swing: {
+                            '0%': { transform: 'rotate(2deg)' },
+                            '100%': { transform: 'rotate(-2deg)' },
+                        },
+                        'glow-pulse': {
+                            '0%': { opacity: '0.6' },
+                            '100%': { opacity: '1' },
+                        }
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .lantern-glow {
+            background: radial-gradient(circle at 75% 15%, rgba(143, 203, 155, 0.5) 0%, rgba(76, 140, 100, 0.15) 40%, transparent 70%);
+        }
+        .lantern-light-source {
+             box-shadow: 0 0 40px 10px rgba(143, 203, 155, 0.6);
+        }
+        .card-shadow {
+            box-shadow: 0 4px 20px -2px rgba(76, 140, 100, 0.08);
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-gray-800 dark:text-gray-100 min-h-screen relative overflow-x-hidden selection:bg-primary-light selection:text-primary-dark">
+<div class="absolute inset-0 bg-islamic-pattern pointer-events-none z-0"></div>
+<div class="absolute top-0 left-0 right-0 h-[500px] lantern-glow z-0 pointer-events-none"></div>
+<div class="absolute top-0 right-6 z-20 pointer-events-none origin-top animate-swing">
+<div class="relative flex flex-col items-center">
+<div class="w-0.5 h-16 bg-gradient-to-b from-gray-400 to-primary-dark"></div>
+<svg class="w-20 h-32 drop-shadow-xl" viewBox="0 0 100 160" xmlns="http://www.w3.org/2000/svg">
+<circle cx="50" cy="5" fill="none" r="5" stroke="#2F4F4F" stroke-width="2"></circle>
+<path d="M30,30 Q50,5 70,30 L75,35 L25,35 Z" fill="#74A57F" stroke="#2F4F4F" stroke-width="1"></path>
+<path d="M25,35 L20,90 L30,120 L70,120 L80,90 L75,35 Z" fill="rgba(255, 255, 240, 0.9)" stroke="#2F4F4F" stroke-width="1.5"></path>
+<path d="M30,50 L70,50 M25,70 L75,70 M22,90 L78,90" fill="none" stroke="#74A57F" stroke-width="0.5"></path>
+<path d="M50,35 L50,120" fill="none" stroke="#74A57F" stroke-width="0.5"></path>
+<rect class="animate-glow-pulse" fill="#C1E1C1" height="60" opacity="0.8" rx="2" width="40" x="30" y="45"></rect>
+<path d="M30,120 L35,135 L65,135 L70,120 Z" fill="#4C8C64" stroke="#2F4F4F" stroke-width="1"></path>
+<line stroke="#2F4F4F" stroke-width="1" x1="50" x2="50" y1="135" y2="150"></line>
+<circle cx="50" cy="153" fill="#74A57F" r="3"></circle>
+</svg>
+<div class="absolute top-24 w-32 h-32 bg-primary-light/40 rounded-full blur-3xl -z-10 animate-glow-pulse"></div>
+</div>
+</div>
+<div class="relative z-10 max-w-md mx-auto pb-24 min-h-screen flex flex-col">
+<header class="px-6 pt-12 pb-6 flex justify-between items-start">
+<div>
+<p class="text-primary-light dark:text-gray-400 text-sm font-semibold mb-1 flex items-center gap-1">
+<span class="material-icons-round text-base">calendar_today</span>
+                14 Mart 2024 • 4 Ramazan 1445
+            </p>
+<h1 class="text-2xl font-bold text-gray-900 dark:text-white leading-tight">
+                Hayırlı Ramazanlar,<br/>
+<span class="text-primary font-bold dark:text-primary-light">Ahmet Bey</span>
+</h1>
+</div>
+<button class="bg-white dark:bg-gray-800 p-2.5 rounded-xl shadow-sm border border-mint-soft dark:border-gray-700 relative group transition-transform active:scale-95">
+<span class="absolute top-2.5 right-2.5 w-2.5 h-2.5 bg-red-500 border-2 border-white dark:border-gray-800 rounded-full z-10"></span>
+<span class="material-icons-round text-primary dark:text-primary-light text-2xl">notifications</span>
+</button>
+</header>
+<main class="flex-1 px-6 space-y-6">
+<section class="bg-white dark:bg-gray-800 rounded-2xl p-6 relative overflow-hidden card-shadow border border-mint-soft dark:border-gray-700">
+<div class="absolute -right-8 -top-8 w-40 h-40 bg-primary-light/20 rounded-full blur-2xl"></div>
+<div class="absolute -left-8 -bottom-8 w-32 h-32 bg-mint-soft/30 rounded-full blur-2xl"></div>
+<div class="flex items-center justify-between mb-2 relative z-10">
+<div class="flex items-center gap-2 bg-mint-soft/50 dark:bg-primary-dark/50 px-3 py-1.5 rounded-full w-fit border border-mint-soft/20">
+<span class="material-icons-round text-primary text-sm">nights_stay</span>
+<span class="text-xs font-bold text-primary dark:text-primary-light uppercase tracking-wide">İftar Vakti</span>
+</div>
+<span class="text-sm font-semibold text-gray-500 dark:text-gray-400 flex items-center gap-1">
+<span class="material-icons-round text-primary-light text-base">location_on</span>
+                    İstanbul
+                </span>
+</div>
+<div class="text-center py-6 relative z-10">
+<div class="text-6xl font-bold text-primary dark:text-white tabular-nums tracking-tight mb-2">04:12:45</div>
+<p class="text-gray-500 dark:text-gray-400 font-medium">Kalan Süre</p>
+</div>
+<div class="mt-4 flex justify-between items-center text-sm border-t border-gray-100 dark:border-gray-700 pt-4 relative z-10">
+<div class="flex flex-col">
+<span class="text-gray-400 text-xs mb-0.5">İkindi</span>
+<span class="font-bold text-gray-700 dark:text-gray-200">16:48</span>
+</div>
+<div class="h-10 w-px bg-gradient-to-b from-transparent via-gray-200 dark:via-gray-600 to-transparent"></div>
+<div class="flex flex-col items-center">
+<span class="text-primary font-bold text-xs mb-0.5">Akşam (İftar)</span>
+<span class="font-bold text-primary text-xl">19:18</span>
+</div>
+<div class="h-10 w-px bg-gradient-to-b from-transparent via-gray-200 dark:via-gray-600 to-transparent"></div>
+<div class="flex flex-col items-end">
+<span class="text-gray-400 text-xs mb-0.5">Yatsı</span>
+<span class="font-bold text-gray-700 dark:text-gray-200">20:42</span>
+</div>
+</div>
+</section>
+<div class="bg-red-50 dark:bg-red-900/10 border border-red-100 dark:border-red-800/20 rounded-xl p-4 flex items-center gap-3">
+<div class="bg-white dark:bg-red-900/40 p-2.5 rounded-lg text-red-500 dark:text-red-200 shadow-sm border border-red-50 dark:border-transparent">
+<span class="material-icons-round text-xl">medication</span>
+</div>
+<div class="flex-1">
+<h3 class="font-bold text-gray-900 dark:text-white text-sm">İlaç Hatırlatıcısı</h3>
+<p class="text-xs text-gray-600 dark:text-gray-300 mt-0.5 leading-relaxed">Glifor (Metformin) - İftardan 15 dk sonra</p>
+</div>
+<button class="bg-red-500 hover:bg-red-600 text-white text-xs px-4 py-2 rounded-lg transition-colors font-semibold shadow-sm">Alındı</button>
+</div>
+<section>
+<div class="flex justify-between items-end mb-3">
+<h2 class="text-lg font-bold text-gray-800 dark:text-gray-100 flex items-center gap-2">
+<span class="w-1 h-5 bg-primary rounded-full"></span>
+                    Günlük Sağlık Durumu
+                </h2>
+<a class="text-primary hover:text-primary-dark text-sm font-semibold hover:underline" href="#">Detaylar</a>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="bg-white dark:bg-gray-800 rounded-xl p-4 card-shadow border border-mint-soft dark:border-gray-700 hover:border-primary-light transition-colors">
+<div class="flex items-center justify-between mb-3">
+<div class="bg-green-50 dark:bg-green-900/20 p-2 rounded-lg text-green-600 dark:text-green-400">
+<span class="material-icons-round text-xl">water_drop</span>
+</div>
+<span class="bg-primary-light/20 text-primary-dark dark:text-primary-light text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wider">Normal</span>
+</div>
+<p class="text-xs text-gray-500 dark:text-gray-400 font-semibold uppercase tracking-wide">Kan Şekeri</p>
+<div class="flex items-end gap-1 mt-1">
+<span class="text-3xl font-bold text-gray-900 dark:text-white">110</span>
+<span class="text-xs text-gray-400 mb-1.5 font-medium">mg/dL</span>
+</div>
+</div>
+<div class="bg-white dark:bg-gray-800 rounded-xl p-4 card-shadow border border-mint-soft dark:border-gray-700 hover:border-primary-light transition-colors">
+<div class="flex items-center justify-between mb-3">
+<div class="bg-rose-50 dark:bg-rose-900/20 p-2 rounded-lg text-rose-500 dark:text-rose-400">
+<span class="material-icons-round text-xl">favorite</span>
+</div>
+<span class="bg-primary-light/20 text-primary-dark dark:text-primary-light text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wider">İyi</span>
+</div>
+<p class="text-xs text-gray-500 dark:text-gray-400 font-semibold uppercase tracking-wide">Tansiyon</p>
+<div class="flex items-end gap-1 mt-1">
+<span class="text-3xl font-bold text-gray-900 dark:text-white">120/80</span>
+<span class="text-xs text-gray-400 mb-1.5 font-medium">mmHg</span>
+</div>
+</div>
+</div>
+</section>
+<section class="pb-4">
+<h2 class="text-lg font-bold text-gray-800 dark:text-gray-100 mb-3 flex items-center gap-2">
+<span class="w-1 h-5 bg-primary rounded-full"></span>
+                İftar Önerisi
+            </h2>
+<div class="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden card-shadow border border-mint-soft dark:border-gray-700">
+<div class="h-36 w-full bg-cover bg-center relative group" data-alt="dates and water served on a table for iftar" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDslK4Xu9oX23_lPYKdM_D4xQWcQQ2QpxLdUBGflqhAYksLOf3g0P0InB98mfZ3snqNQXiINknlyR-csigmOQYhjH1JZi3iXvkZgCMJ2IQl5SpXJ7jaYwabyGg5f0oWyUApzJur3yTmU5K--plE79fTOxueaWSrIgU5ixSO-88D5p5aXCZ5iIB-cYKIFJyseTkYaTSWFoKlsCqDdtXJ9wtnJaAAcikFRkYBqAoilHE0GDVTSa4N0AWy3Ty_K09gT1_7ddtT0f_o3os');">
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent flex items-end p-5 transition-opacity group-hover:from-black/90">
+<div class="text-white w-full">
+<div class="flex items-center justify-between">
+<h3 class="font-bold text-xl mb-1">Hafif Başlangıç</h3>
+<span class="bg-primary text-white text-[10px] font-bold px-2 py-1 rounded-md">ÖNERİLEN</span>
+</div>
+<p class="text-sm opacity-90 font-medium">Midenizi yormadan orucunuzu açın</p>
+</div>
+</div>
+</div>
+<div class="p-5">
+<div class="flex items-center justify-between gap-2 overflow-x-auto no-scrollbar pb-3">
+<div class="flex-shrink-0 flex flex-col items-center gap-2">
+<div class="w-16 h-16 rounded-full bg-orange-50 dark:bg-orange-900/20 border border-orange-100 dark:border-orange-800/30 flex items-center justify-center">
+<span class="text-3xl drop-shadow-sm">🫒</span>
+</div>
+<span class="text-xs font-bold text-center text-gray-700 dark:text-gray-300 w-20 leading-tight">1 Hurma &amp; Su</span>
+</div>
+<span class="material-icons-round text-primary-light/50">arrow_forward</span>
+<div class="flex-shrink-0 flex flex-col items-center gap-2">
+<div class="w-16 h-16 rounded-full bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-100 dark:border-yellow-800/30 flex items-center justify-center">
+<span class="text-3xl drop-shadow-sm">🥣</span>
+</div>
+<span class="text-xs font-bold text-center text-gray-700 dark:text-gray-300 w-20 leading-tight">Mercimek Çorbası</span>
+</div>
+<span class="material-icons-round text-primary-light/50">arrow_forward</span>
+<div class="flex-shrink-0 flex flex-col items-center gap-2">
+<div class="w-16 h-16 rounded-full bg-teal-50 dark:bg-teal-900/20 border border-teal-100 dark:border-teal-800/30 flex items-center justify-center">
+<span class="text-3xl drop-shadow-sm">🥗</span>
+</div>
+<span class="text-xs font-bold text-center text-gray-700 dark:text-gray-300 w-20 leading-tight">Mevsim Salatası</span>
+</div>
+</div>
+<button class="w-full mt-3 bg-primary hover:bg-primary-dark text-white py-3.5 rounded-xl font-semibold text-sm shadow-md shadow-primary/20 hover:shadow-lg transition-all flex items-center justify-center gap-2 active:scale-[0.98]">
+<span class="material-icons-round text-xl">restaurant_menu</span>
+                        Tam Menüyü Görüntüle
+                    </button>
+</div>
+</div>
+</section>
+<section class="grid grid-cols-4 gap-3">
+<button class="flex flex-col items-center gap-2 group">
+<div class="w-16 h-16 bg-white dark:bg-gray-800 rounded-2xl flex items-center justify-center shadow-sm border border-mint-soft dark:border-gray-700 group-active:scale-95 transition-transform group-hover:border-primary-light group-hover:shadow-md">
+<span class="material-icons-round text-primary text-3xl">monitor_weight</span>
+</div>
+<span class="text-[11px] font-semibold text-gray-600 dark:text-gray-400 text-center leading-tight">Ölçüm<br/>Gir</span>
+</button>
+<button class="flex flex-col items-center gap-2 group">
+<div class="w-16 h-16 bg-white dark:bg-gray-800 rounded-2xl flex items-center justify-center shadow-sm border border-mint-soft dark:border-gray-700 group-active:scale-95 transition-transform group-hover:border-primary-light group-hover:shadow-md">
+<span class="material-icons-round text-green-500 text-3xl">local_drink</span>
+</div>
+<span class="text-[11px] font-semibold text-gray-600 dark:text-gray-400 text-center leading-tight">Su<br/>Takibi</span>
+</button>
+<button class="flex flex-col items-center gap-2 group">
+<div class="w-16 h-16 bg-white dark:bg-gray-800 rounded-2xl flex items-center justify-center shadow-sm border border-mint-soft dark:border-gray-700 group-active:scale-95 transition-transform group-hover:border-primary-light group-hover:shadow-md">
+<span class="material-icons-round text-primary text-3xl">mosque</span>
+</div>
+<span class="text-[11px] font-semibold text-gray-600 dark:text-gray-400 text-center leading-tight">Namaz<br/>Vakitleri</span>
+</button>
+<button class="flex flex-col items-center gap-2 group">
+<div class="w-16 h-16 bg-white dark:bg-gray-800 rounded-2xl flex items-center justify-center shadow-sm border border-mint-soft dark:border-gray-700 group-active:scale-95 transition-transform group-hover:border-primary-light group-hover:shadow-md">
+<span class="material-icons-round text-primary-light text-3xl">menu_book</span>
+</div>
+<span class="text-[11px] font-semibold text-gray-600 dark:text-gray-400 text-center leading-tight">Kuran<br/>Dinle</span>
+</button>
+</section>
+</main>
+<nav class="fixed bottom-0 left-0 right-0 bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl border-t border-mint-soft dark:border-gray-800 px-6 pb-6 pt-3 z-50 rounded-t-3xl shadow-[0_-4px_20px_-4px_rgba(76,140,100,0.15)]">
+<div class="max-w-md mx-auto flex justify-between items-center">
+<a class="flex flex-col items-center gap-1 w-12 text-primary dark:text-primary-light" href="#">
+<span class="material-icons-round text-2xl">home</span>
+<span class="text-[10px] font-bold">Ana Sayfa</span>
+</a>
+<a class="flex flex-col items-center gap-1 w-12 text-gray-400 dark:text-gray-500 hover:text-primary transition-colors" href="#">
+<span class="material-icons-round text-2xl">restaurant</span>
+<span class="text-[10px] font-medium">Yemekler</span>
+</a>
+<div class="relative -top-8 group">
+<button class="w-16 h-16 bg-primary text-white rounded-full flex items-center justify-center shadow-lg shadow-primary/40 border-4 border-background-light dark:border-background-dark transform group-hover:scale-105 group-active:scale-95 transition-all">
+<span class="material-icons-round text-3xl">add</span>
+</button>
+</div>
+<a class="flex flex-col items-center gap-1 w-12 text-gray-400 dark:text-gray-500 hover:text-primary transition-colors" href="#">
+<span class="material-icons-round text-2xl">favorite</span>
+<span class="text-[10px] font-medium">Sağlık</span>
+</a>
+<a class="flex flex-col items-center gap-1 w-12 text-gray-400 dark:text-gray-500 hover:text-primary transition-colors" href="#">
+<span class="material-icons-round text-2xl">person</span>
+<span class="text-[10px] font-medium">Profil</span>
+</a>
+</div>
+</nav>
+</div>
+</body></html>
