@@ -31,10 +31,18 @@ export default async function AdminLayout({ children }: { children: ReactNode })
           <NavLink href="/admin" icon="dashboard">Dashboard</NavLink>
           <NavLink href="/admin/duyurular" icon="campaign">Duyurular</NavLink>
           <NavLink href="/admin/yemek" icon="restaurant">Yemek Menüsü</NavLink>
-          <NavLink href="/admin/program" icon="calendar_month">Ders Programı</NavLink>
-          <NavLink href="/admin/sinav" icon="edit_document">Sınavlar</NavLink>
-          <NavLink href="/admin/etkinlik" icon="event">Etkinlikler</NavLink>
-          <NavLink href="/admin/etut" icon="local_library">Etüt & Pansiyon</NavLink>
+          <Link href="/admin/program" className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/10 transition-colors text-white/90">
+            <span className="material-icons-round">calendar_today</span>
+            <span>Ders Programı</span>
+          </Link>
+          <Link href="/admin/sinavlar" className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/10 transition-colors text-white/90">
+            <span className="material-icons-round">event_note</span>
+            <span>Sınav Takvimi</span>
+          </Link>
+          <Link href="/admin/etut" className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/10 transition-colors text-white/90">
+            <span className="material-icons-round">menu_book</span>
+            <span>Pansiyon Etütleri</span>
+          </Link>
         </nav>
         <div className="p-4 border-t border-white/10">
           <Link href="/" className="flex items-center gap-3 p-3 text-sm text-slate-400 hover:text-white transition-colors rounded-xl hover:bg-white/5">

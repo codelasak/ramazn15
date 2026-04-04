@@ -62,6 +62,8 @@ export const users = pgTable("users", {
   department: departmentEnum("department"),
   isBoarder: boolean("is_boarder").notNull().default(false),
   profileImageUrl: text("profile_image_url"),
+  targetUniversity: varchar("target_university", { length: 255 }),
+  targetNet: decimal("target_net", { precision: 6, scale: 2 }),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
@@ -122,16 +124,16 @@ export const exams = pgTable("exams", {
 export const mockExamResults = pgTable("mock_exam_results", {
   id: uuid("id").defaultRandom().primaryKey(),
   userId: uuid("user_id")
-    .references(() => users.id)
-    .notNull(),
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
   examName: varchar("exam_name", { length: 255 }).notNull(),
-  examDate: date("exam_date").notNull(),
-  subject: varchar("subject", { length: 255 }).notNull(),
-  correctCount: integer("correct_count").notNull().default(0),
-  wrongCount: integer("wrong_count").notNull().default(0),
-  emptyCount: integer("empty_count").notNull().default(0),
-  netScore: decimal("net_score", { precision: 6, scale: 2 }).notNull().default("0"),
-  targetNet: decimal("target_net", { precision: 6, scale: 2 }),
+  examDate: timestamp("exam_date").notNull(),
+  turkceNet: decimal("turkce_net", { precision: 5, scale: 2 }).notNull().default("0"),
+  matematikNet: decimal("matematik_net", { precision: 5, scale: 2 }).notNull().default("0"),
+  sosyalNet: decimal("sosyal_net", { precision: 5, scale: 2 }).notNull().default("0"),
+  fenNet: decimal("fen_net", { precision: 5, scale: 2 }).notNull().default("0"),
+  netScore: decimal("net_score", { precision: 5, scale: 2 }).notNull().default("0"),
+  targetNet: decimal("target_net", { precision: 5, scale: 2 }),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 

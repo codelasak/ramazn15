@@ -33,7 +33,19 @@ const PRAYER_KEYS = [
   { key: "yatsi", label: "Yatsı", icon: "bedtime" },
 ] as const;
 
-export default function DashboardScreen() {
+interface DashboardScreenProps {
+  meals: any[];
+  announcements: any[];
+  upcomingExam?: {
+    title: string;
+    examDate: string;
+    examType: string;
+  } | null;
+  studySessions?: any[];
+  schedules?: any[];
+}
+
+export default function DashboardScreen({ meals, announcements, upcomingExam, studySessions, schedules }: DashboardScreenProps) {
   const { data: session, status } = useSession();
   const router = useRouter();
   const { times, loading: prayerLoading } = usePrayerTimes();
@@ -73,20 +85,23 @@ export default function DashboardScreen() {
     return null;
   }, [now, times]);
 
-  /* YKS countdown for 12th graders, or generic countdown */
+  /* Dynamic exam countdown from upcomingExam prop */
   const examCountdown = useMemo(() => {
-    const grade = user?.className?.replace(/\D/g, "");
-    if (grade === "12") {
-      // YKS TYT: ~June 14, 2026 (approximate)
-      const yksDate = new Date(2026, 5, 14, 10, 0, 0);
-      const diff = yksDate.getTime() - now.getTime();
-      if (diff <= 0) return null;
-      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      return { label: "YKS'ye Kalan", days, hours, type: "yks" as const };
-    }
-    return null;
-  }, [now, user?.className]);
+    if (!upcomingExam) return null;
+    const examDate = new Date(upcomingExam.examDate);
+    const diff = examDate.getTime() - now.getTime();
+    if (diff <= 0) return null;
+    
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    
+    return { 
+      label: upcomingExam.title, 
+      days, 
+      hours, 
+      type: upcomingExam.examType 
+    };
+  }, [now, upcomingExam]);
 
   if (status === "loading") {
     return (
@@ -240,40 +255,67 @@ export default function DashboardScreen() {
               </Link>
             </div>
             <div className="space-y-2.5">
-              {/* Placeholder - will be populated from DB */}
-              <div className="flex items-center gap-3 p-3 bg-primary/5 rounded-xl border border-primary/10">
-                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                  <span className="text-primary font-bold text-sm">1</span>
+              {schedules && schedules.length > 0 ? (
+                schedules.map((schedule) => {
+                  // If it's currently happening, we can style it differently, but for now just list them
+                  const isNow = false; // Could check with now.getHours() and schedule time
+                  return (
+                    <div key={schedule.id} className={`flex items-center gap-3 p-3 rounded-xl border ${isNow ? 'bg-primary/5 border-primary/10' : 'bg-gray-50 border-transparent'}`}>
+                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${isNow ? 'bg-primary/10 text-primary' : 'bg-gray-100 text-gray-500'}`}>
+                        <span className="font-bold text-sm">{schedule.period}</span>
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-sm font-semibold text-gray-800">{schedule.subject}</p>
+                        <p className="text-xs text-gray-500">
+                          {schedule.startTime.slice(0, 5)} - {schedule.endTime.slice(0, 5)}
+                          {schedule.teacher && ` • ${schedule.teacher}`}
+                        </p>
+                      </div>
+                      {isNow && <span className="material-icons-round text-primary/40 text-sm">circle</span>}
+                    </div>
+                  );
+                })
+              ) : (
+                <div className="p-4 bg-gray-50 rounded-xl text-center border border-gray-100">
+                  <p className="text-sm text-gray-500">Bugün için planlanmış ders bulunamadı.</p>
                 </div>
-                <div className="flex-1">
-                  <p className="text-sm font-semibold text-gray-800">Matematik</p>
-                  <p className="text-xs text-gray-500">08:30 - 09:10 • Ahmet Hoca</p>
-                </div>
-                <span className="material-icons-round text-primary/40 text-sm">circle</span>
-              </div>
-              <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
-                <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center">
-                  <span className="text-gray-500 font-bold text-sm">2</span>
-                </div>
-                <div className="flex-1">
-                  <p className="text-sm font-semibold text-gray-800">Fizik</p>
-                  <p className="text-xs text-gray-500">09:20 - 10:00 • Fatma Hoca</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
-                <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center">
-                  <span className="text-gray-500 font-bold text-sm">3</span>
-                </div>
-                <div className="flex-1">
-                  <p className="text-sm font-semibold text-gray-800">Türkçe</p>
-                  <p className="text-xs text-gray-500">10:10 - 10:50 • Mehmet Hoca</p>
-                </div>
-              </div>
-              <p className="text-center text-xs text-gray-400 pt-1">
-                Veriler admin panelden yönetilecektir
-              </p>
+              )}
             </div>
           </section>
+
+          {/* Today's Study Sessions (Boarders only) */}
+          {user.isBoarder && (
+            <section className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-base font-bold text-gray-800 flex items-center gap-2">
+                  <span className="material-icons-round text-amber-500 text-xl">menu_book</span>
+                  Bugünkü Etütler
+                </h2>
+              </div>
+              <div className="space-y-2.5">
+                {studySessions && studySessions.length > 0 ? (
+                  studySessions.map((session, index) => (
+                    <div key={session.id} className="flex items-center gap-3 p-3 bg-amber-50/50 rounded-xl border border-amber-100">
+                      <div className="w-10 h-10 rounded-lg bg-amber-100 flex items-center justify-center">
+                        <span className="text-amber-600 font-bold text-sm">{index + 1}</span>
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-sm font-semibold text-gray-800">{session.subject ?? "Bireysel Çalışma"}</p>
+                        <p className="text-xs text-gray-500">
+                          {session.startTime.slice(0, 5)} - {session.endTime.slice(0, 5)} 
+                          {session.location && ` • ${session.location}`}
+                        </p>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl text-center">
+                    <p className="text-sm text-gray-500 w-full">Bugün için planlanmış etüt yok.</p>
+                  </div>
+                )}
+              </div>
+            </section>
+          )}
 
           {/* Cafeteria Menu Card */}
           <section className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
@@ -286,21 +328,29 @@ export default function DashboardScreen() {
                 {user.isBoarder ? "3 Öğün" : "Öğle"}
               </span>
             </div>
-            <div className="bg-gradient-to-r from-orange-50 to-amber-50 rounded-xl p-4 border border-orange-100/50">
-              <div className="flex items-center gap-2 mb-2">
-                <span className="material-icons-round text-orange-500 text-base">schedule</span>
-                <span className="text-xs font-bold text-orange-700 uppercase tracking-wide">
-                  {user.isBoarder ? "Öğle Yemeği" : "Bugünün Menüsü"}
-                </span>
+            {meals.length > 0 ? (
+              <div className="space-y-3">
+                {meals.filter(m => user.isBoarder ? true : m.mealType === 'ogle').map((m) => (
+                  <div key={m.id} className="bg-gradient-to-r from-orange-50 to-amber-50 rounded-xl p-4 border border-orange-100/50">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="material-icons-round text-orange-500 text-base">schedule</span>
+                      <span className="text-xs font-bold text-orange-700 uppercase tracking-wide">
+                        {m.mealType === 'ogle' ? 'Öğle Yemeği' : m.mealType === 'kahvalti' ? 'Kahvaltı' : 'Akşam Yemeği'} ({m.date})
+                      </span>
+                    </div>
+                    <div className="space-y-1">
+                      {m.items.split('\n').map((item: string, i: number) => (
+                        <p key={i} className="text-sm text-gray-700 font-medium">👉 {item.trim()}</p>
+                      ))}
+                    </div>
+                  </div>
+                ))}
               </div>
-              <div className="space-y-1">
-                <p className="text-sm text-gray-700">🍲 Mercimek Çorbası</p>
-                <p className="text-sm text-gray-700">🍖 Tavuk Sote</p>
-                <p className="text-sm text-gray-700">🍚 Pirinç Pilavı</p>
-                <p className="text-sm text-gray-700">🥗 Mevsim Salatası</p>
+            ) : (
+              <div className="bg-gray-50 rounded-xl p-4 border border-gray-100 text-center">
+                <p className="text-sm text-gray-500">Henüz yemek menüsü eklenmedi.</p>
               </div>
-              <p className="text-[10px] text-gray-400 mt-2 italic">Veriler admin panelden yönetilecektir</p>
-            </div>
+            )}
           </section>
 
           {/* Announcements Preview */}
@@ -315,14 +365,26 @@ export default function DashboardScreen() {
               </Link>
             </div>
             <div className="space-y-3">
-              <div className="p-3 bg-blue-50/50 rounded-xl border border-blue-100/50">
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="bg-blue-100 text-blue-700 text-[10px] font-bold px-2 py-0.5 rounded-full">GENEL</span>
-                  <span className="text-[10px] text-gray-400">Bugün</span>
+              {announcements.length > 0 ? (
+                announcements.map((ann) => (
+                  <div key={ann.id} className="p-3 bg-blue-50/50 rounded-xl border border-blue-100/50">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="bg-blue-100 text-blue-700 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">
+                        {ann.targetAudience}
+                      </span>
+                      <span className="text-[10px] text-gray-400">
+                        {new Date(ann.createdAt).toLocaleDateString("tr-TR")}
+                      </span>
+                    </div>
+                    <p className="text-sm font-semibold text-gray-800">{ann.title}</p>
+                    <p className="text-xs text-gray-500 mt-0.5 line-clamp-2">{ann.content}</p>
+                  </div>
+                ))
+              ) : (
+                <div className="p-3 bg-gray-50 rounded-xl border border-gray-100 text-center">
+                  <p className="text-sm font-semibold text-gray-600">Henüz duyuru eklenmedi</p>
                 </div>
-                <p className="text-sm font-semibold text-gray-800">Henüz duyuru eklenmedi</p>
-                <p className="text-xs text-gray-500 mt-0.5">Admin panelden duyurular eklenebilir.</p>
-              </div>
+              )}
             </div>
           </section>
 

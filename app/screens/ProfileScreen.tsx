@@ -2,7 +2,8 @@
 
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState, useTransition } from "react";
+import { updateGoals } from "../profil/actions";
 
 const DEPARTMENT_LABELS: Record<string, string> = {
   teknoloji_fen: "Teknoloji ve Fen Bilimleri",
@@ -10,15 +11,18 @@ const DEPARTMENT_LABELS: Record<string, string> = {
   hazirlik: "Hazırlık",
 };
 
-export default function ProfileScreen() {
+export default function ProfileScreen({ dbUser }: { dbUser: any }) {
   const { data: session, status } = useSession();
   const router = useRouter();
+  
+  const [isPending, startTransition] = useTransition();
+  const [goalSaved, setGoalSaved] = useState(false);
 
   useEffect(() => {
     if (status === "unauthenticated") router.push("/giris");
   }, [status, router]);
 
-  if (status === "loading") {
+  if (status === "loading" || !dbUser) {
     return (
       <div className="min-h-dvh flex items-center justify-center">
         <div className="w-10 h-10 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
@@ -31,6 +35,20 @@ export default function ProfileScreen() {
 
   const initial = user.name?.[0]?.toUpperCase() ?? "Ö";
   const deptLabel = user.department ? DEPARTMENT_LABELS[user.department] ?? user.department : "Belirtilmedi";
+
+  const handleGoalSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    startTransition(async () => {
+      try {
+        await updateGoals(formData);
+        setGoalSaved(true);
+        setTimeout(() => setGoalSaved(false), 3000);
+      } catch (err) {
+        console.error(err);
+      }
+    });
+  };
 
   return (
     <div className="relative min-h-dvh">
@@ -55,7 +73,7 @@ export default function ProfileScreen() {
           </div>
         </header>
 
-        <main className="px-6 pb-8 -mt-2">
+        <main className="px-6 pb-8 -mt-2 space-y-6">
           {/* Info Cards */}
           <div className="bg-white rounded-2xl shadow-lg shadow-black/5 border border-gray-100 divide-y divide-gray-50">
             <div className="p-5 flex items-center gap-4">
@@ -105,28 +123,70 @@ export default function ProfileScreen() {
             </div>
           </div>
 
-          {/* Admin Panel Link */}
-          {user.role === "admin" && (
-            <button
-              onClick={() => router.push("/admin")}
-              className="w-full mt-4 bg-indigo-500 hover:bg-indigo-600 text-white py-3.5 rounded-xl font-semibold text-sm shadow-lg shadow-indigo-500/20 transition-all flex items-center justify-center gap-2"
-            >
-              <span className="material-icons-round text-lg">admin_panel_settings</span>
-              Admin Paneli
-            </button>
-          )}
+          {/* Goal Setting Section */}
+          <div className="bg-white rounded-2xl shadow-lg shadow-black/5 border border-gray-100 p-5">
+            <h3 className="font-bold text-gray-800 mb-4 flex items-center gap-2">
+              <span className="material-icons-round text-primary text-xl">flag</span>
+              Hedef Belirleme
+            </h3>
+            
+            <form onSubmit={handleGoalSubmit} className="space-y-4">
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1">Hedef Üniversite / Bölüm</label>
+                <input 
+                  name="targetUniversity"
+                  type="text" 
+                  defaultValue={dbUser.targetUniversity ?? ""}
+                  placeholder="Örn: Boğaziçi Bilgisayar Mühendisliği" 
+                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition duration-200"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-500 mb-1">Hedef YKS Neti / Puanı</label>
+                <input 
+                  name="targetNet"
+                  type="number" 
+                  step="0.01"
+                  defaultValue={dbUser.targetNet ?? ""}
+                  placeholder="Örn: 95.5" 
+                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition duration-200"
+                />
+              </div>
+              
+              <button 
+                type="submit" 
+                disabled={isPending}
+                className="w-full bg-primary hover:bg-primary-dark text-white font-semibold py-3 rounded-xl transition duration-200 disabled:opacity-70 disabled:cursor-not-allowed"
+              >
+                {isPending ? "Kaydediliyor..." : goalSaved ? "Hedefler Kaydedildi! 🎉" : "Hedefleri Güncelle"}
+              </button>
+            </form>
+          </div>
 
-          {/* Sign Out */}
-          <button
-            onClick={() => signOut({ callbackUrl: "/giris" })}
-            className="w-full mt-4 bg-red-50 hover:bg-red-100 text-red-600 py-3.5 rounded-xl font-semibold text-sm border border-red-100 transition-all flex items-center justify-center gap-2"
-          >
-            <span className="material-icons-round text-lg">logout</span>
-            Çıkış Yap
-          </button>
+          <div className="space-y-4">
+            {/* Admin Panel Link */}
+            {user.role === "admin" && (
+              <button
+                onClick={() => router.push("/admin")}
+                className="w-full bg-indigo-500 hover:bg-indigo-600 text-white py-3.5 rounded-xl font-semibold text-sm shadow-lg shadow-indigo-500/20 transition-all flex items-center justify-center gap-2"
+              >
+                <span className="material-icons-round text-lg">admin_panel_settings</span>
+                Admin Paneli
+              </button>
+            )}
+
+            {/* Sign Out */}
+            <button
+              onClick={() => signOut({ callbackUrl: "/giris" })}
+              className="w-full bg-red-50 hover:bg-red-100 text-red-600 py-3.5 rounded-xl font-semibold text-sm border border-red-100 transition-all flex items-center justify-center gap-2"
+            >
+              <span className="material-icons-round text-lg">logout</span>
+              Çıkış Yap
+            </button>
+          </div>
 
           {/* App info */}
-          <div className="text-center mt-8 space-y-1">
+          <div className="text-center pb-8 space-y-1">
             <p className="text-xs text-gray-400">15 Temmuz AİHL v1.0</p>
             <p className="text-xs text-gray-300">Bahçelievler 15 Temmuz Şehitleri AİHL © 2026</p>
           </div>
