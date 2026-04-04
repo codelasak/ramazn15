@@ -1,5 +1,10 @@
-import HomeScreen from "./screens/HomeScreen";
+import AppShell from "./shell/AppShell";
+import DashboardScreen from "./screens/DashboardScreen";
 
-export default function Page() {
-  return <HomeScreen />;
+export default function Home() {
+  return (
+    <AppShell>
+      <DashboardScreen />
+    </AppShell>
+  );
 }

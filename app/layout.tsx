@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Lexend } from "next/font/google";
 import "./globals.css";
-import AppShell from "./shell/AppShell";
+import Providers from "./providers";
 
 const lexend = Lexend({
   variable: "--font-lexend",
@@ -10,8 +10,8 @@ const lexend = Lexend({
 });
 
 export const metadata: Metadata = {
-  title: "Ramazan Takip",
-  description: "Ramazan için ibadet, beslenme ve sağlık takip ekranları",
+  title: "15 Temmuz AİHL",
+  description: "Bahçelievler 15 Temmuz Şehitleri AİHL Öğrenci Uygulaması — Geleceğe Adım At",
 };
 
 export default function RootLayout({
@@ -38,7 +38,7 @@ export default function RootLayout({
         />
       </head>
       <body className={`${lexend.variable} font-display antialiased`}>
-        <AppShell>{children}</AppShell>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

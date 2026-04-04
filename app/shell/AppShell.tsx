@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useSession } from "next-auth/react";
 import type { ReactNode } from "react";
 
 type NavItem = {
@@ -12,14 +13,21 @@ type NavItem = {
 
 const NAV_ITEMS: NavItem[] = [
   { href: "/", label: "Ana Sayfa", icon: "home" },
-  { href: "/beslenme", label: "Beslenme", icon: "restaurant_menu" },
-  { href: "/takip", label: "Takip", icon: "monitor_heart" },
+  { href: "/program", label: "Program", icon: "calendar_month" },
+  { href: "/takip", label: "Takip", icon: "trending_up" },
   { href: "/ibadet", label: "İbadet", icon: "mosque" },
   { href: "/profil", label: "Profil", icon: "person" },
 ];
 
 export default function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
+  const { status } = useSession();
+
+  // Don't show shell on auth pages or when not authenticated
+  const isAuthPage = pathname === "/giris" || pathname === "/kayit";
+  if (isAuthPage || status === "unauthenticated") {
+    return <>{children}</>;
+  }
 
   return (
     <div className="min-h-dvh bg-background text-foreground relative">
@@ -28,7 +36,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
       </main>
 
       <nav
-        className="fixed inset-x-0 bottom-0 bg-white/95 backdrop-blur-xl border-t border-mint-soft z-50 rounded-t-3xl"
+        className="fixed inset-x-0 bottom-0 bg-white/95 backdrop-blur-xl border-t border-gray-100 z-50 rounded-t-3xl"
         style={{ boxShadow: "0 -4px 20px -4px rgba(76,140,100,0.15)" }}
         aria-label="Alt menü"
       >
