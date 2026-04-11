@@ -3,40 +3,29 @@ import Image from "next/image";
 
 type Developer = {
   name: string;
-  info: string;
   image: string;
 };
 
 const DEVELOPERS: Developer[] = [
   {
-    name: "Muhammed Musab ALASIRT",
-    info: "Frontend ve uygulama deneyimi geliştirme",
-    image: "/developers/musab.jpg",
-  },
-  {
     name: "Ahmet Faruk Bahat",
-    info: "Backend servisleri ve API geliştirme",
     image: "/developers/ahmet-faruk.jpg",
   },
   {
+    name: "Ahmet Talha Kuşak",
+    image: "/developers/ahmet-talha.jpg",
+  },
+  {
+    name: "Ali İsmail Eftekin",
+    image: "/developers/ali-ismail.jpg",
+  },
+  {
     name: "Mehmed Ali Cevahir",
-    info: "Veri yapısı ve sistem entegrasyonları",
     image: "/developers/ali-cevahir.jpg",
   },
   {
     name: "Musa Bouzantsi",
-    info: "Test, kalite ve süreç takibi",
     image: "/developers/musa.jpg",
-  },
-  {
-    name: "Ali İsmail Eftekin",
-    info: "Ürün planlama ve kullanıcı odaklı iyileştirmeler",
-    image: "/developers/ali-ismail.jpg",
-  },
-  {
-    name: "Ahmet Talha Kuşak",
-    info: "Full-stack geliştirme ve teknik destek",
-    image: "/developers/ahmet-talha.jpg",
   },
 ];
 
@@ -76,7 +65,6 @@ export default function DevelopersPage() {
                 </div>
                 <div>
                   <h2 className="text-sm font-bold text-gray-800 dark:text-gray-900">{developer.name}</h2>
-                  <p className="text-xs text-gray-500 dark:text-gray-700 mt-1">{developer.info}</p>
                 </div>
               </article>
             );

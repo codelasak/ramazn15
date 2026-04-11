@@ -363,7 +363,7 @@ export default function RegisterScreen() {
         <div className="mx-auto max-w-sm rounded-2xl border border-emerald-100/80 bg-white/60 backdrop-blur p-3.5 text-gray-600">
           <p className="text-[11px] font-semibold tracking-wide text-emerald-700">Geliştirici Ekibi</p>
           <p className="mt-1 text-[11px] leading-relaxed text-gray-500">
-            Muhammed Musab ALASIRT, Ahmet Faruk Bahat, Mehmed Ali Cevahir, Musa Bouzantsi, Ali İsmail Eftekin, Ahmet Talha Kuşak
+            Ahmet Faruk Bahat, Ahmet Talha Kuşak, Ali İsmail Eftekin, Mehmed Ali Cevahir, Musa Bouzantsi
           </p>
           <Link
             href="/developers"
