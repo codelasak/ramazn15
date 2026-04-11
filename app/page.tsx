@@ -24,13 +24,14 @@ export default async function Home() {
   
   // Fetch today's class schedules if user has a class
   let todaysSchedules: any[] = [];
-  if (session?.user?.className) {
+  const fullClassName = session?.user?.id ? (await db.select({ className: users.className }).from(users).where(eq(users.id, session.user.id)))[0]?.className : null;
+  if (fullClassName) {
     todaysSchedules = await db.select()
       .from(classSchedules)
       .where(
         and(
           eq(classSchedules.dayOfWeek, todayDayOfWeek),
-          eq(classSchedules.className, session.user.className)
+          eq(classSchedules.className, fullClassName)
         )
       )
       .orderBy(asc(classSchedules.period));
