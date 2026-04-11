@@ -15,7 +15,7 @@ export async function addMockExamResult(formData: FormData) {
   // Parse form data
   const examName = formData.get("examName") as string;
   const examType = formData.get("examType") as string;
-  const examDate = formData.get("examDate") as string;
+  const examDate = new Date(formData.get("examDate") as string);
 
   const turkishCorrect = parseInt(formData.get("turkishCorrect") as string || "0");
   const turkishWrong = parseInt(formData.get("turkishWrong") as string || "0");
@@ -37,7 +37,7 @@ export async function addMockExamResult(formData: FormData) {
     userId: session.user.id,
     examName,
     examType,
-    examDate,
+    examDate: new Date(examDate),
     turkishCorrect,
     turkishWrong,
     mathCorrect,

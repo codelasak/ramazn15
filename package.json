@@ -3,13 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
+    "dev": "next dev --webpack",
+    "build": "next build --webpack",
     "start": "next start",
     "lint": "eslint"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.0.2",
+    "@netlify/plugin-nextjs": "^5.15.9",
     "bcryptjs": "^3.0.3",
     "drizzle-orm": "^0.45.2",
     "next": "^16.2.3",

@@ -49,3 +49,30 @@ export async function deleteExam(id: string) {
   revalidatePath("/");
   revalidatePath("/admin/sinavlar");
 }
+
+export async function updateExam(formData: FormData) {
+  const session = await getServerSession(authOptions);
+  if (session?.user?.role !== "admin") {
+    throw new Error("Yetkisiz işlem!");
+  }
+
+  const id = formData.get("id") as string;
+  const title = formData.get("title") as string;
+  const examType = formData.get("examType") as "yazili" | "deneme" | "yks" | "lgs";
+  const className = formData.get("className") as string;
+  const examDateStr = formData.get("examDate") as string;
+  const subject = formData.get("subject") as string;
+
+  const examDate = new Date(examDateStr);
+
+  await db.update(exams).set({
+    title,
+    examType,
+    className: className || null,
+    examDate,
+    subject: subject || null,
+  }).where(eq(exams.id, id));
+
+  revalidatePath("/");
+  revalidatePath("/admin/sinavlar");
+}

@@ -29,3 +29,24 @@ export async function deleteStudySession(id: string) {
   revalidatePath("/admin/etut");
   revalidatePath("/");
 }
+
+export async function updateStudySession(formData: FormData) {
+  const id = formData.get("id") as string;
+  const dayOfWeek = parseInt(formData.get("dayOfWeek") as string, 10);
+  const startTime = formData.get("startTime") as string;
+  const endTime = formData.get("endTime") as string;
+  const subject = formData.get("subject") as string;
+  const location = formData.get("location") as string;
+
+  await db.update(studySessions).set({
+    dayOfWeek,
+    startTime: startTime.length === 5 ? startTime + ":00" : startTime,
+    endTime: endTime.length === 5 ? endTime + ":00" : endTime,
+    subject: subject || null,
+    location: location || null,
+    updatedAt: new Date(),
+  }).where(eq(studySessions.id, id));
+
+  revalidatePath("/admin/etut");
+  revalidatePath("/");
+}
