@@ -29,20 +29,12 @@ export default async function AdminLayout({ children }: { children: ReactNode })
         </div>
         <nav className="flex-1 p-4 space-y-1 overflow-y-auto section-nav">
           <NavLink href="/admin" icon="dashboard">Dashboard</NavLink>
+          <NavLink href="/admin/ogrenciler" icon="groups">Öğrenciler</NavLink>
           <NavLink href="/admin/duyurular" icon="campaign">Duyurular</NavLink>
           <NavLink href="/admin/yemek" icon="restaurant">Yemek Menüsü</NavLink>
-          <Link href="/admin/program" className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/10 transition-colors text-white/90">
-            <span className="material-icons-round">calendar_today</span>
-            <span>Ders Programı</span>
-          </Link>
-          <Link href="/admin/sinavlar" className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/10 transition-colors text-white/90">
-            <span className="material-icons-round">event_note</span>
-            <span>Sınav Takvimi</span>
-          </Link>
-          <Link href="/admin/etut" className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/10 transition-colors text-white/90">
-            <span className="material-icons-round">menu_book</span>
-            <span>Pansiyon Etütleri</span>
-          </Link>
+          <NavLink href="/admin/program" icon="calendar_today">Ders Programı</NavLink>
+          <NavLink href="/admin/sinavlar" icon="event_note">Sınav Takvimi</NavLink>
+          <NavLink href="/admin/etut" icon="menu_book">Pansiyon Etütleri</NavLink>
         </nav>
         <div className="p-4 border-t border-white/10">
           <Link href="/" className="flex items-center gap-3 p-3 text-sm text-slate-400 hover:text-white transition-colors rounded-xl hover:bg-white/5">
