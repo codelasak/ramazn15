@@ -265,22 +265,20 @@ export default function DashboardScreen({ meals, announcements, upcomingExam, st
             </div>
             <div className="space-y-2.5">
               {schedules && schedules.length > 0 ? (
-                schedules.map((schedule) => {
-                  // If it's currently happening, we can style it differently, but for now just list them
-                  const isNow = false; // Could check with now.getHours() and schedule time
+                schedules.map((schedule: any) => {
                   return (
-                    <div key={schedule.id} className={`flex items-center gap-3 p-3 rounded-xl border ${isNow ? 'bg-primary/5 border-primary/10' : 'bg-gray-50 border-transparent'}`}>
-                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${isNow ? 'bg-primary/10 text-primary' : 'bg-gray-100 text-gray-500 dark:text-gray-700'}`}>
+                    <div key={schedule.id} className="flex items-center gap-3 p-3 rounded-xl border bg-gray-50 border-transparent">
+                      <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-gray-100 text-gray-500 dark:text-gray-700">
                         <span className="font-bold text-sm">{schedule.period}</span>
                       </div>
                       <div className="flex-1">
                         <p className="text-sm font-semibold text-gray-800 dark:text-gray-900">{schedule.subject}</p>
                         <p className="text-xs text-gray-500 dark:text-gray-700">
-                          {schedule.startTime.slice(0, 5)} - {schedule.endTime.slice(0, 5)}
-                          {schedule.teacher && ` • ${schedule.teacher}`}
+                          {schedule.startTime?.slice(0, 5)} - {schedule.endTime?.slice(0, 5)}
+                          {(schedule.teacher || schedule.teacherName) && ` • ${schedule.teacher || schedule.teacherName}`}
+                          {schedule.room && ` • ${schedule.room}`}
                         </p>
                       </div>
-                      {isNow && <span className="material-icons-round text-primary/40 text-sm">circle</span>}
                     </div>
                   );
                 })
