@@ -33,20 +33,20 @@ export async function addMockExamResult(formData: FormData) {
                    calcNet(socialCorrect, socialWrong) + 
                    calcNet(scienceCorrect, scienceWrong);
 
+  const turkceNet = calcNet(turkishCorrect, turkishWrong);
+  const matematikNet = calcNet(mathCorrect, mathWrong);
+  const sosyalNet = calcNet(socialCorrect, socialWrong);
+  const fenNet = calcNet(scienceCorrect, scienceWrong);
+
   await db.insert(mockExamResults).values({
     userId: session.user.id,
     examName,
-    examType,
     examDate,
-    turkishCorrect,
-    turkishWrong,
-    mathCorrect,
-    mathWrong,
-    socialCorrect,
-    socialWrong,
-    scienceCorrect,
-    scienceWrong,
-    totalNet: totalNet.toFixed(2),
+    turkceNet: turkceNet.toFixed(2),
+    matematikNet: matematikNet.toFixed(2),
+    sosyalNet: sosyalNet.toFixed(2),
+    fenNet: fenNet.toFixed(2),
+    netScore: totalNet.toFixed(2),
   });
 
   revalidatePath("/takip");

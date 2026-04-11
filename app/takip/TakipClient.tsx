@@ -7,6 +7,15 @@ export default function TakipClient({ results }: { results: any[] }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const getTotalNet = (r: any) => Number(r.totalNet ?? r.netScore ?? 0);
+  const getExamType = (r: any) => r.examType ?? "Deneme";
+  const formatExamDate = (value: any) => {
+    if (!value) return "-";
+    const d = value instanceof Date ? value : new Date(value);
+    if (Number.isNaN(d.getTime())) return String(value);
+    return d.toLocaleDateString("tr-TR");
+  };
+
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setIsSubmitting(true);
@@ -17,7 +26,7 @@ export default function TakipClient({ results }: { results: any[] }) {
   }
 
   // Find max net for the graph scaling
-  const maxNet = results.length > 0 ? Math.max(...results.map(r => parseFloat(r.totalNet)), 120) : 120; // Default 120 for TYT
+  const maxNet = results.length > 0 ? Math.max(...results.map((r) => getTotalNet(r)), 120) : 120; // Default 120 for TYT
 
   return (
     <div className="space-y-6">
@@ -43,11 +52,12 @@ export default function TakipClient({ results }: { results: any[] }) {
           </h3>
           <div className="flex items-end gap-3 h-48 pt-4 overflow-x-auto no-scrollbar pb-2">
             {results.slice().reverse().map((r, i) => {
-              const heightPct = Math.max(10, (parseFloat(r.totalNet) / maxNet) * 100);
+              const totalNet = getTotalNet(r);
+              const heightPct = Math.max(10, (totalNet / maxNet) * 100);
               return (
                 <div key={r.id} className="flex flex-col items-center flex-shrink-0 group">
                   <div className="text-xs font-bold text-gray-500 mb-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    {r.totalNet}
+                    {totalNet.toFixed(2)}
                   </div>
                   <div 
                     className="w-12 bg-gradient-to-t from-primary to-primary/40 rounded-t-md transition-all relative group-hover:from-indigo-500 group-hover:to-indigo-300"
@@ -76,14 +86,14 @@ export default function TakipClient({ results }: { results: any[] }) {
                 <p className="font-bold text-gray-800">{r.examName}</p>
                 <div className="flex gap-2 items-center mt-1">
                   <span className="bg-gray-100 text-gray-600 text-[10px] uppercase font-bold px-2 py-0.5 rounded">
-                    {r.examType}
+                    {getExamType(r)}
                   </span>
-                  <span className="text-xs text-gray-400">{r.examDate}</span>
+                  <span className="text-xs text-gray-400">{formatExamDate(r.examDate)}</span>
                 </div>
               </div>
               <div className="text-right">
                 <p className="text-xs text-gray-500 mb-0.5">Toplam Net</p>
-                <p className="text-xl font-bold text-primary">{r.totalNet}</p>
+                <p className="text-xl font-bold text-primary">{getTotalNet(r).toFixed(2)}</p>
               </div>
             </div>
           ))

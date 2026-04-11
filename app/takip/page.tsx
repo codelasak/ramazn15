@@ -13,12 +13,17 @@ export default async function TakipPage() {
     redirect("/giris");
   }
 
-  // Kullanıcının deneme sonuçlarını çekelim, en yeni en üstte olacak şekilde
-  const results = await db
-    .select()
-    .from(mockExamResults)
-    .where(eq(mockExamResults.userId, session.user.id))
-    .orderBy(desc(mockExamResults.examDate));
+  // DB migration henüz uygulanmamışsa sayfayı patlatmak yerine boş listeyle devam et.
+  let results: typeof mockExamResults.$inferSelect[] = [];
+  try {
+    results = await db
+      .select()
+      .from(mockExamResults)
+      .where(eq(mockExamResults.userId, session.user.id))
+      .orderBy(desc(mockExamResults.examDate));
+  } catch (error) {
+    console.error("Failed to load mock exam results", error);
+  }
 
   return (
     <AppShell>

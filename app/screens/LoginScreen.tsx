@@ -7,6 +7,11 @@ import { useState } from "react";
 
 export default function LoginScreen() {
   const router = useRouter();
+  const isDev = process.env.NODE_ENV === "development";
+  const devLoginEmail = process.env.NEXT_PUBLIC_DEV_LOGIN_EMAIL;
+  const devLoginPassword = process.env.NEXT_PUBLIC_DEV_LOGIN_PASSWORD;
+  const canUseDevLogin = isDev && !!devLoginEmail && !!devLoginPassword;
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -27,6 +32,32 @@ export default function LoginScreen() {
 
       if (res?.error) {
         setError("E-posta veya şifre hatalı.");
+      } else {
+        router.push("/");
+        router.refresh();
+      }
+    } catch {
+      setError("Bir hata oluştu. Lütfen tekrar deneyin.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleDevLogin() {
+    if (!canUseDevLogin || !devLoginEmail || !devLoginPassword) return;
+
+    setError("");
+    setLoading(true);
+
+    try {
+      const res = await signIn("credentials", {
+        email: devLoginEmail,
+        password: devLoginPassword,
+        redirect: false,
+      });
+
+      if (res?.error) {
+        setError("Dev hızlı giriş başarısız oldu. Ortam değişkenlerini kontrol edin.");
       } else {
         router.push("/");
         router.refresh();
@@ -148,6 +179,18 @@ export default function LoginScreen() {
                   </>
                 )}
               </button>
+
+              {canUseDevLogin && (
+                <button
+                  type="button"
+                  onClick={handleDevLogin}
+                  disabled={loading}
+                  className="w-full border border-emerald-200 bg-emerald-50 text-emerald-800 py-3 rounded-xl font-semibold text-sm hover:bg-emerald-100 transition-colors disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                >
+                  <span className="material-icons-round text-lg">bolt</span>
+                  Dev Hızlı Giriş
+                </button>
+              )}
             </form>
           </div>
 

@@ -31,7 +31,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
 
   return (
     <div className="min-h-dvh bg-background text-foreground relative">
-      <main className="mx-auto w-full max-w-md pb-24 min-h-dvh">
+      <main className="mx-auto w-full max-w-md min-h-dvh pb-[calc(8.5rem+env(safe-area-inset-bottom))]">
         {children}
       </main>
 
@@ -40,7 +40,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
         style={{ boxShadow: "0 -4px 20px -4px rgba(76,140,100,0.15)" }}
         aria-label="Alt menü"
       >
-        <div className="mx-auto flex max-w-md items-center justify-between px-6 pb-6 pt-3">
+        <div className="mx-auto flex max-w-md items-center justify-between px-6 pt-3 pb-[calc(1.5rem+env(safe-area-inset-bottom))]">
           {NAV_ITEMS.map((item, idx) => {
             const isActive = pathname === item.href;
             const isCenter = idx === 2;

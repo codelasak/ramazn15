@@ -16,6 +16,17 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
+### Quick dev login (optional)
+
+To enable a one-click login button on `/giris` in development, add these values to your local `.env.local`:
+
+```bash
+NEXT_PUBLIC_DEV_LOGIN_EMAIL=your-user-email@example.com
+NEXT_PUBLIC_DEV_LOGIN_PASSWORD=your-user-password
+```
+
+This button is only shown when `NODE_ENV=development` and both variables are set.
+
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.

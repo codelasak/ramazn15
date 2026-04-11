@@ -389,7 +389,7 @@ export default function DashboardScreen({ meals, announcements, upcomingExam, st
           </section>
 
           {/* Quick Actions */}
-          <section className="grid grid-cols-4 gap-3 pb-4">
+          <section className="grid grid-cols-4 gap-3 pb-10">
             <Link href="/ibadet" className="flex flex-col items-center gap-2 group">
               <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center shadow-sm border border-gray-100 group-active:scale-95 transition-transform group-hover:border-primary/30 group-hover:shadow-md">
                 <span className="material-icons-round text-primary text-2xl">mosque</span>
