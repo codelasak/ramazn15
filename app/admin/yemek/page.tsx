@@ -37,11 +37,7 @@ export default async function AdminYemekPage() {
 
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">Yemekler</label>
-<<<<<<< HEAD
-                <textarea required name="items" rows={4} placeholder="Her satıra bir yemek (örn: Domates Çorbası\nEt Sote...)" className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 text-gray-800 dark:text-gray-900"></textarea>
-=======
-                <textarea required name="items" rows={4} placeholder={"Her satıra bir yemek (örn: Domates Çorbası\nEt Sote...)"} className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50"></textarea>
->>>>>>> 68ee85c2f27c7eb27fd60080d7691aac015e2c5c
+                <textarea required name="items" rows={4} placeholder={"Her satıra bir yemek (örn: Domates Çorbası\nEt Sote...)"} className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 text-gray-800 dark:text-gray-900"></textarea>
               </div>
 
               <button type="submit" className="w-full bg-primary hover:bg-primary-dark text-white font-medium py-2 px-4 rounded-lg transition-colors flex justify-center items-center gap-2">
@@ -66,19 +62,6 @@ export default async function AdminYemekPage() {
             ) : (
               <ul className="divide-y divide-slate-100">
                 {menus.map((m) => (
-<<<<<<< HEAD
-                  <li key={m.id} className="p-4 hover:bg-slate-50 text-gray-800 dark:text-gray-900">
-                    <div className="flex justify-between items-start mb-2">
-                      <div className="flex items-center gap-2">
-                        <span className={`px-2 py-0.5 rounded text-xs font-bold uppercase ${
-                          m.mealType === 'ogle' ? 'bg-orange-100 text-orange-700' : 
-                          m.mealType === 'kahvalti' ? 'bg-yellow-100 text-yellow-700' : 
-                          'bg-indigo-100 text-indigo-700'
-                        }`}>
-                          {m.mealType === 'ogle' ? 'Öğle' : m.mealType === 'kahvalti' ? 'Kahvaltı' : 'Akşam'}
-                        </span>
-                        <span className="text-sm font-medium text-slate-500">{m.date}</span>
-=======
                   <li key={m.id} className="p-4 hover:bg-slate-50 group">
                     <details className="[&[open]>summary_.edit-icon]:rotate-180">
                       <summary className="flex justify-between items-start cursor-pointer list-none [&::-webkit-details-marker]:hidden">
@@ -138,7 +121,6 @@ export default async function AdminYemekPage() {
                             Güncelle
                           </button>
                         </form>
->>>>>>> 68ee85c2f27c7eb27fd60080d7691aac015e2c5c
                       </div>
                     </details>
                   </li>
