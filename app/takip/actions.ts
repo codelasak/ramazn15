@@ -37,7 +37,7 @@ export async function addMockExamResult(formData: FormData) {
     userId: session.user.id,
     examName,
     examType,
-    examDate,
+    examDate: new Date(examDate),
     turkishCorrect,
     turkishWrong,
     mathCorrect,

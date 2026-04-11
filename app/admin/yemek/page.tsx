@@ -1,25 +1,10 @@
 import { db } from "../../lib/db";
 import { mealMenus } from "../../lib/schema";
 import { desc } from "drizzle-orm";
-import { revalidatePath } from "next/cache";
+import { createMenu, deleteMenu, updateMenu } from "./actions";
 
 export default async function AdminYemekPage() {
-  const menus = await db.select().from(mealMenus).orderBy(desc(mealMenus.date)).limit(10);
-
-  async function createMenu(formData: FormData) {
-    "use server";
-    const date = formData.get("date") as string;
-    const mealType = formData.get("mealType") as "kahvalti" | "ogle" | "aksam";
-    const items = formData.get("items") as string;
-
-    await db.insert(mealMenus).values({
-      date,
-      mealType,
-      items,
-    });
-
-    revalidatePath("/admin/yemek");
-  }
+  const menus = await db.select().from(mealMenus).orderBy(desc(mealMenus.date)).limit(20);
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -52,7 +37,7 @@ export default async function AdminYemekPage() {
 
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">Yemekler</label>
-                <textarea required name="items" rows={4} placeholder="Her satıra bir yemek (örn: Domates Çorbası\nEt Sote...)" className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50"></textarea>
+                <textarea required name="items" rows={4} placeholder={"Her satıra bir yemek (örn: Domates Çorbası\nEt Sote...)"} className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50"></textarea>
               </div>
 
               <button type="submit" className="w-full bg-primary hover:bg-primary-dark text-white font-medium py-2 px-4 rounded-lg transition-colors flex justify-center items-center gap-2">
@@ -77,23 +62,67 @@ export default async function AdminYemekPage() {
             ) : (
               <ul className="divide-y divide-slate-100">
                 {menus.map((m) => (
-                  <li key={m.id} className="p-4 hover:bg-slate-50">
-                    <div className="flex justify-between items-start mb-2">
-                      <div className="flex items-center gap-2">
-                        <span className={`px-2 py-0.5 rounded text-xs font-bold uppercase ${
-                          m.mealType === 'ogle' ? 'bg-orange-100 text-orange-700' : 
-                          m.mealType === 'kahvalti' ? 'bg-yellow-100 text-yellow-700' : 
-                          'bg-indigo-100 text-indigo-700'
-                        }`}>
-                          {m.mealType === 'ogle' ? 'Öğle' : m.mealType === 'kahvalti' ? 'Kahvaltı' : 'Akşam'}
-                        </span>
-                        <span className="text-sm font-medium text-slate-500">{m.date}</span>
+                  <li key={m.id} className="p-4 hover:bg-slate-50 group">
+                    <details className="[&[open]>summary_.edit-icon]:rotate-180">
+                      <summary className="flex justify-between items-start cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className={`px-2 py-0.5 rounded text-xs font-bold uppercase ${
+                              m.mealType === 'ogle' ? 'bg-orange-100 text-orange-700' : 
+                              m.mealType === 'kahvalti' ? 'bg-yellow-100 text-yellow-700' : 
+                              'bg-indigo-100 text-indigo-700'
+                            }`}>
+                              {m.mealType === 'ogle' ? 'Öğle' : m.mealType === 'kahvalti' ? 'Kahvaltı' : 'Akşam'}
+                            </span>
+                            <span className="text-sm font-medium text-slate-500">{m.date}</span>
+                          </div>
+                          <div className="text-sm text-slate-800 whitespace-pre-line">
+                            {m.items}
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-1 ml-2 shrink-0">
+                          <span className="edit-icon text-slate-400 hover:text-primary p-1 transition-transform" title="Düzenle">
+                            <span className="material-icons-round text-sm">edit</span>
+                          </span>
+                          <form action={async () => {
+                            "use server";
+                            await deleteMenu(m.id);
+                          }}>
+                            <button type="submit" className="text-red-400 hover:text-red-600 p-1" title="Sil">
+                              <span className="material-icons-round text-sm">delete</span>
+                            </button>
+                          </form>
+                        </div>
+                      </summary>
+                      {/* Edit Form */}
+                      <div className="mt-3 pt-3 border-t border-slate-100">
+                        <form action={updateMenu} className="space-y-3">
+                          <input type="hidden" name="id" value={m.id} />
+                          <div className="grid grid-cols-2 gap-3">
+                            <div>
+                              <label className="block text-xs font-medium text-slate-600 mb-1">Tarih</label>
+                              <input type="date" name="date" defaultValue={m.date} required className="w-full px-2 py-1.5 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50" />
+                            </div>
+                            <div>
+                              <label className="block text-xs font-medium text-slate-600 mb-1">Öğün</label>
+                              <select name="mealType" defaultValue={m.mealType} required className="w-full px-2 py-1.5 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50">
+                                <option value="ogle">Öğle Yemeği</option>
+                                <option value="kahvalti">Kahvaltı</option>
+                                <option value="aksam">Akşam Yemeği</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div>
+                            <label className="block text-xs font-medium text-slate-600 mb-1">Yemekler</label>
+                            <textarea name="items" rows={3} defaultValue={m.items} required className="w-full px-2 py-1.5 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50"></textarea>
+                          </div>
+                          <button type="submit" className="w-full bg-primary hover:bg-primary-dark text-white text-sm font-medium py-1.5 px-3 rounded-lg transition-colors flex justify-center items-center gap-1">
+                            <span className="material-icons-round text-sm">save</span>
+                            Güncelle
+                          </button>
+                        </form>
                       </div>
-                      <button className="text-red-500 hover:text-red-700 p-1"><span className="material-icons-round text-sm">delete</span></button>
-                    </div>
-                    <div className="text-sm text-slate-800 whitespace-pre-line">
-                      {m.items}
-                    </div>
+                    </details>
                   </li>
                 ))}
               </ul>
