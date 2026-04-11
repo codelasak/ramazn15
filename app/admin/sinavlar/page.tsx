@@ -1,7 +1,7 @@
 import { db } from "@/app/lib/db";
 import { exams } from "@/app/lib/schema";
 import { desc } from "drizzle-orm";
-import { addExam, deleteExam } from "./actions";
+import { addExam, deleteExam, updateExam } from "./actions";
 
 export default async function AdminSinavlarPage() {
   const upcomingExams = await db
@@ -10,116 +10,182 @@ export default async function AdminSinavlarPage() {
     .orderBy(desc(exams.examDate));
 
   return (
-    <div className="space-y-6">
-      <header className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">Sınav Takvimi & Geri Sayımlar</h1>
-        <p className="text-sm text-gray-500 mt-1">
-          Öğrencilerin dashboard'unda görünecek yaklaşan sınavları buradan ayarlayabilirsiniz.
-        </p>
+    <div className="max-w-4xl mx-auto">
+      <header className="mb-8 flex justify-between items-end">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-800">Sınav Takvimi Yönetimi</h1>
+          <p className="text-slate-500 mt-1">Öğrencilerin dashboard'unda görünecek yaklaşan sınavları buradan ayarlayabilirsiniz.</p>
+        </div>
       </header>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {/* Form Alanı */}
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 h-fit">
-          <h2 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
-            <span className="material-icons-round text-primary">add_task</span>
-            Yeni Sınav Ekle
-          </h2>
-          <form action={addExam} className="space-y-4">
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1">Başlık</label>
-              <input type="text" name="title" required placeholder="Örn: 1. Dönem 1. Matematik Yazılısı" className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm" />
-            </div>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Form */}
+        <div className="lg:col-span-1">
+          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 sticky top-6">
+            <h2 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+              <span className="material-icons-round text-primary">add_task</span>
+              Yeni Sınav Ekle
+            </h2>
+            <form action={addExam} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Başlık</label>
+                <input type="text" name="title" required placeholder="Örn: 1. Dönem 1. Matematik Yazılısı" className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm" />
+              </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Sınav Tipi</label>
-                <select name="examType" required className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm">
-                  <option value="yazili">Yazılı</option>
-                  <option value="deneme">Deneme Sınavı</option>
-                  <option value="yks">YKS</option>
-                  <option value="lgs">LGS</option>
-                </select>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Sınav Tipi</label>
+                  <select name="examType" required className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm">
+                    <option value="yazili">Yazılı</option>
+                    <option value="deneme">Deneme Sınavı</option>
+                    <option value="yks">YKS</option>
+                    <option value="lgs">LGS</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Tarih</label>
+                  <input type="date" name="examDate" required className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm" />
+                </div>
               </div>
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Tarih</label>
-                <input type="date" name="examDate" required className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm" />
-              </div>
-            </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Ders (Opsiyonel)</label>
-                <input type="text" name="subject" placeholder="Örn: Matematik" className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm" />
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Ders (Opsiyonel)</label>
+                  <input type="text" name="subject" placeholder="Örn: Matematik" className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Hedef Sınıf</label>
+                  <select name="className" className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm">
+                    <option value="">Tüm Sınıflar</option>
+                    <option value="9">9. Sınıflar</option>
+                    <option value="10">10. Sınıflar</option>
+                    <option value="11">11. Sınıflar</option>
+                    <option value="12">12. Sınıflar</option>
+                    <option value="Hazırlık">Hazırlık</option>
+                  </select>
+                </div>
               </div>
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Hedef Sınıf</label>
-                <select name="className" className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm">
-                  <option value="">Tüm Sınıflar (Genel)</option>
-                  <option value="9">9 Sınıflar</option>
-                  <option value="10">10 Sınıflar</option>
-                  <option value="11">11 Sınıflar</option>
-                  <option value="12">12 Sınıflar</option>
-                  <option value="Hazırlık">Hazırlık</option>
-                </select>
-              </div>
-            </div>
 
-            <div className="mt-6 pt-4 border-t border-gray-100">
-              <button type="submit" className="w-full bg-primary hover:bg-primary-dark text-white font-bold py-2.5 px-4 rounded-xl shadow-sm transition-colors cursor-pointer">
+              <button type="submit" className="w-full bg-primary hover:bg-primary-dark text-white font-medium py-2 px-4 rounded-lg transition-colors flex justify-center items-center gap-2">
+                <span className="material-icons-round text-sm">save</span>
                 Sınavı Kaydet
               </button>
-            </div>
-          </form>
+            </form>
+          </div>
         </div>
 
-        {/* Liste Alanı */}
-        <div className="space-y-4">
-          <h2 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
-            <span className="material-icons-round text-primary">event_note</span>
-            Aktif Sınavlar
-          </h2>
-
-          {upcomingExams.length === 0 ? (
-             <div className="bg-gray-50 border border-gray-100 rounded-2xl p-6 text-center text-gray-400">
-               Sistemde kayıtlı bir sınav bulunmuyor.
-             </div>
-          ) : (
-            upcomingExams.map((exam) => (
-              <div key={exam.id} className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between">
-                <div>
-                  <h3 className="font-bold text-gray-800">{exam.title}</h3>
-                  <div className="flex gap-2 items-center mt-1 text-xs text-gray-500">
-                    <span className="bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded font-medium uppercase tracking-wider">
-                      {exam.examType}
-                    </span>
-                    <span>•</span>
-                    <span className="flex items-center gap-1">
-                      <span className="material-icons-round text-[14px]">calendar_today</span>
-                      {exam.examDate.toLocaleDateString('tr-TR')}
-                    </span>
-                    {exam.className && (
-                      <>
-                        <span>•</span>
-                        <span className="flex items-center gap-1">
-                          <span className="material-icons-round text-[14px]">school</span>
-                          {exam.className}. Sınıf
-                        </span>
-                      </>
-                    )}
-                  </div>
-                </div>
-                <form action={async () => {
-                  "use server";
-                  await deleteExam(exam.id);
-                }}>
-                  <button type="submit" className="text-red-400 hover:text-red-600 bg-red-50 hover:bg-red-100 p-2 rounded-lg transition-colors" title="Sil">
-                    <span className="material-icons-round text-sm block">delete</span>
-                  </button>
-                </form>
+        {/* List */}
+        <div className="lg:col-span-2">
+          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+            <div className="p-4 border-b border-slate-200 bg-slate-50 flex justify-between items-center">
+              <h2 className="font-bold text-slate-800">Aktif Sınavlar</h2>
+              <span className="text-sm text-slate-500">{upcomingExams.length} sınav</span>
+            </div>
+            {upcomingExams.length === 0 ? (
+              <div className="p-8 text-center text-slate-500">
+                <span className="material-icons-round text-4xl mb-2 opacity-50">event_note</span>
+                <p>Sistemde kayıtlı bir sınav bulunmuyor.</p>
               </div>
-            ))
-          )}
+            ) : (
+              <ul className="divide-y divide-slate-100">
+                {upcomingExams.map((exam) => (
+                  <li key={exam.id} className="p-4 hover:bg-slate-50">
+                    <details className="[&[open]>summary_.edit-icon]:rotate-180">
+                      <summary className="flex justify-between items-start cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+                        <div className="flex-1">
+                          <h3 className="text-sm font-bold text-slate-800 mb-1">{exam.title}</h3>
+                          <div className="flex gap-2 items-center text-xs text-slate-500 flex-wrap">
+                            <span className="bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded font-medium uppercase tracking-wider">
+                              {exam.examType}
+                            </span>
+                            <span>•</span>
+                            <span className="flex items-center gap-1">
+                              <span className="material-icons-round text-[14px]">calendar_today</span>
+                              {exam.examDate.toLocaleDateString('tr-TR')}
+                            </span>
+                            {exam.subject && (
+                              <>
+                                <span>•</span>
+                                <span>{exam.subject}</span>
+                              </>
+                            )}
+                            {exam.className && (
+                              <>
+                                <span>•</span>
+                                <span className="flex items-center gap-1">
+                                  <span className="material-icons-round text-[14px]">school</span>
+                                  {exam.className}. Sınıf
+                                </span>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-1 ml-2 shrink-0">
+                          <span className="edit-icon text-slate-400 hover:text-primary p-1 transition-transform" title="Düzenle">
+                            <span className="material-icons-round text-sm">edit</span>
+                          </span>
+                          <form action={async () => {
+                            "use server";
+                            await deleteExam(exam.id);
+                          }}>
+                            <button type="submit" className="text-red-400 hover:text-red-600 p-1" title="Sil">
+                              <span className="material-icons-round text-sm">delete</span>
+                            </button>
+                          </form>
+                        </div>
+                      </summary>
+                      {/* Edit Form */}
+                      <div className="mt-3 pt-3 border-t border-slate-100">
+                        <form action={updateExam} className="space-y-3">
+                          <input type="hidden" name="id" value={exam.id} />
+                          <div>
+                            <label className="block text-xs font-medium text-slate-600 mb-1">Başlık</label>
+                            <input type="text" name="title" defaultValue={exam.title} required className="w-full px-2 py-1.5 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50" />
+                          </div>
+                          <div className="grid grid-cols-2 gap-3">
+                            <div>
+                              <label className="block text-xs font-medium text-slate-600 mb-1">Sınav Tipi</label>
+                              <select name="examType" defaultValue={exam.examType} required className="w-full px-2 py-1.5 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50">
+                                <option value="yazili">Yazılı</option>
+                                <option value="deneme">Deneme</option>
+                                <option value="yks">YKS</option>
+                                <option value="lgs">LGS</option>
+                              </select>
+                            </div>
+                            <div>
+                              <label className="block text-xs font-medium text-slate-600 mb-1">Tarih</label>
+                              <input type="date" name="examDate" defaultValue={exam.examDate.toISOString().split('T')[0]} required className="w-full px-2 py-1.5 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50" />
+                            </div>
+                          </div>
+                          <div className="grid grid-cols-2 gap-3">
+                            <div>
+                              <label className="block text-xs font-medium text-slate-600 mb-1">Ders</label>
+                              <input type="text" name="subject" defaultValue={exam.subject || ""} className="w-full px-2 py-1.5 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50" />
+                            </div>
+                            <div>
+                              <label className="block text-xs font-medium text-slate-600 mb-1">Sınıf</label>
+                              <select name="className" defaultValue={exam.className || ""} className="w-full px-2 py-1.5 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50">
+                                <option value="">Tüm Sınıflar</option>
+                                <option value="9">9. Sınıflar</option>
+                                <option value="10">10. Sınıflar</option>
+                                <option value="11">11. Sınıflar</option>
+                                <option value="12">12. Sınıflar</option>
+                                <option value="Hazırlık">Hazırlık</option>
+                              </select>
+                            </div>
+                          </div>
+                          <button type="submit" className="w-full bg-primary hover:bg-primary-dark text-white text-sm font-medium py-1.5 px-3 rounded-lg transition-colors flex justify-center items-center gap-1">
+                            <span className="material-icons-round text-sm">save</span>
+                            Güncelle
+                          </button>
+                        </form>
+                      </div>
+                    </details>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
         </div>
       </div>
     </div>
