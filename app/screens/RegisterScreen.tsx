@@ -103,7 +103,7 @@ export default function RegisterScreen() {
   }
 
   return (
-    <div className="min-h-dvh flex flex-col bg-gradient-to-br from-slate-50 via-emerald-50/30 to-teal-50/40 relative overflow-hidden">
+    <div className="min-h-dvh flex flex-col bg-linear-to-br from-slate-50 via-emerald-50/30 to-teal-50/40 relative overflow-hidden">
       {/* Decorative elements */}
       <div className="absolute top-0 left-0 w-72 h-72 bg-primary/10 rounded-full blur-3xl -translate-y-1/3 -translate-x-1/3" />
       <div className="absolute bottom-0 right-0 w-64 h-64 bg-teal-200/20 rounded-full blur-3xl translate-y-1/3 translate-x-1/4" />
@@ -115,7 +115,7 @@ export default function RegisterScreen() {
       <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-6 py-10">
         {/* Logo */}
         <div className="text-center mb-8">
-          <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-primary to-primary-dark flex items-center justify-center shadow-xl shadow-primary/30">
+          <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-linear-to-br from-primary to-primary-dark flex items-center justify-center shadow-xl shadow-primary/30">
             <span className="material-icons-round text-white text-3xl">school</span>
           </div>
           <h1 className="text-xl font-bold text-gray-900">Kayıt Ol</h1>
@@ -192,7 +192,7 @@ export default function RegisterScreen() {
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-600 hover:text-gray-500 dark:text-gray-700"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-600 hover:text-gray-500"
                       >
                         <span className="material-icons-round text-xl">{showPassword ? "visibility_off" : "visibility"}</span>
                       </button>
@@ -224,7 +224,7 @@ export default function RegisterScreen() {
 
                   <button
                     type="submit"
-                    className="w-full bg-gradient-to-r from-primary to-primary-dark text-white py-3.5 rounded-xl font-semibold text-sm shadow-lg shadow-primary/25 hover:shadow-xl transition-all active:scale-[0.98] flex items-center justify-center gap-2"
+                    className="w-full bg-linear-to-r from-primary to-primary-dark text-white py-3.5 rounded-xl font-semibold text-sm shadow-lg shadow-primary/25 hover:shadow-xl transition-all active:scale-[0.98] flex items-center justify-center gap-2"
                   >
                     Devam Et
                     <span className="material-icons-round text-lg">arrow_forward</span>
@@ -330,7 +330,7 @@ export default function RegisterScreen() {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-full bg-gradient-to-r from-primary to-primary-dark text-white py-3.5 rounded-xl font-semibold text-sm shadow-lg shadow-primary/25 transition-all active:scale-[0.98] disabled:opacity-60 flex items-center justify-center gap-2"
+                    className="w-full bg-linear-to-r from-primary to-primary-dark text-white py-3.5 rounded-xl font-semibold text-sm shadow-lg shadow-primary/25 transition-all active:scale-[0.98] disabled:opacity-60 flex items-center justify-center gap-2"
                   >
                     {loading ? (
                       <>
@@ -357,6 +357,23 @@ export default function RegisterScreen() {
             </Link>
           </p>
         </div>
+      </div>
+
+      <div className="relative z-10 pb-6 px-6 text-center">
+        <div className="mx-auto max-w-sm rounded-2xl border border-emerald-100/80 bg-white/60 backdrop-blur p-3.5 text-gray-600">
+          <p className="text-[11px] font-semibold tracking-wide text-emerald-700">Geliştirici Ekibi</p>
+          <p className="mt-1 text-[11px] leading-relaxed text-gray-500">
+            Muhammed Musab ALASIRT, Ahmet Faruk Bahat, Mehmed Ali Cevahir, Musa Bouzantsi, Ali İsmail Eftekin, Ahmet Talha Kuşak
+          </p>
+          <Link
+            href="/developers"
+            className="mt-2 inline-flex items-center gap-1.5 text-[11px] font-semibold text-primary hover:text-primary-dark transition-colors"
+          >
+            <span className="material-icons-round text-sm">groups</span>
+            Tüm geliştiricileri görüntüle
+          </Link>
+        </div>
+        <p className="mt-2 text-xs text-gray-400 dark:text-gray-600">Bahçelievler 15 Temmuz Şehitleri AİHL © 2026</p>
       </div>
     </div>
   );
