@@ -13,28 +13,28 @@ export default async function AdminSinavlarPage() {
     <div className="space-y-6">
       <header className="mb-8">
         <h1 className="text-2xl font-bold text-gray-900">Sınav Takvimi & Geri Sayımlar</h1>
-        <p className="text-sm text-gray-500 mt-1">
+        <p className="text-sm text-gray-500 dark:text-gray-700 mt-1">
           Öğrencilerin dashboard'unda görünecek yaklaşan sınavları buradan ayarlayabilirsiniz.
         </p>
       </header>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {/* Form Alanı */}
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 h-fit">
-          <h2 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 h-fit text-gray-800 dark:text-gray-900">
+          <h2 className="text-lg font-bold text-gray-800 dark:text-gray-900 mb-4 flex items-center gap-2">
             <span className="material-icons-round text-primary">add_task</span>
             Yeni Sınav Ekle
           </h2>
           <form action={addExam} className="space-y-4">
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-1">Başlık</label>
-              <input type="text" name="title" required placeholder="Örn: 1. Dönem 1. Matematik Yazılısı" className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm" />
+              <input type="text" name="title" required placeholder="Örn: 1. Dönem 1. Matematik Yazılısı" className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm text-gray-800 dark:text-gray-900" />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-1">Sınav Tipi</label>
-                <select name="examType" required className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm">
+                <select name="examType" required className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm text-gray-800 dark:text-gray-900">
                   <option value="yazili">Yazılı</option>
                   <option value="deneme">Deneme Sınavı</option>
                   <option value="yks">YKS</option>
@@ -43,18 +43,18 @@ export default async function AdminSinavlarPage() {
               </div>
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-1">Tarih</label>
-                <input type="date" name="examDate" required className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm" />
+                <input type="date" name="examDate" required className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm text-gray-800 dark:text-gray-900" />
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-1">Ders (Opsiyonel)</label>
-                <input type="text" name="subject" placeholder="Örn: Matematik" className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm" />
+                <input type="text" name="subject" placeholder="Örn: Matematik" className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm text-gray-800 dark:text-gray-900" />
               </div>
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-1">Hedef Sınıf</label>
-                <select name="className" className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm">
+                <select name="className" className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm text-gray-800 dark:text-gray-900">
                   <option value="">Tüm Sınıflar (Genel)</option>
                   <option value="9">9 Sınıflar</option>
                   <option value="10">10 Sınıflar</option>
@@ -75,21 +75,21 @@ export default async function AdminSinavlarPage() {
 
         {/* Liste Alanı */}
         <div className="space-y-4">
-          <h2 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+          <h2 className="text-lg font-bold text-gray-800 dark:text-gray-900 mb-4 flex items-center gap-2">
             <span className="material-icons-round text-primary">event_note</span>
             Aktif Sınavlar
           </h2>
 
           {upcomingExams.length === 0 ? (
-             <div className="bg-gray-50 border border-gray-100 rounded-2xl p-6 text-center text-gray-400">
+             <div className="bg-gray-50 border border-gray-100 rounded-2xl p-6 text-center text-gray-400 dark:text-gray-600">
                Sistemde kayıtlı bir sınav bulunmuyor.
              </div>
           ) : (
             upcomingExams.map((exam) => (
-              <div key={exam.id} className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between">
+              <div key={exam.id} className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between text-gray-800 dark:text-gray-900">
                 <div>
-                  <h3 className="font-bold text-gray-800">{exam.title}</h3>
-                  <div className="flex gap-2 items-center mt-1 text-xs text-gray-500">
+                  <h3 className="font-bold text-gray-800 dark:text-gray-900">{exam.title}</h3>
+                  <div className="flex gap-2 items-center mt-1 text-xs text-gray-500 dark:text-gray-700">
                     <span className="bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded font-medium uppercase tracking-wider">
                       {exam.examType}
                     </span>

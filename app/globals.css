@@ -1,8 +1,14 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
 :root {
   --background: #F5F9F5;
   --foreground: #1f2937;
+}
+
+.dark {
+  --background: #1A2F23;
+  --foreground: #f3f4f6;
 }
 
 @theme inline {
@@ -22,8 +28,7 @@
   --color-bg-dark: #1A2F23;
 }
 
-/* Force light mode — design is light-only */
-html { color-scheme: light; }
+/* Base configuration */
 
 body {
   background: var(--background);

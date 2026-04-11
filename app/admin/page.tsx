@@ -16,7 +16,7 @@ export default function AdminDashboardPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Quick Actions */}
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 text-gray-800 dark:text-gray-900">
           <h2 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
             <span className="material-icons-round text-primary">bolt</span>
             Hızlı İşlemler
@@ -29,7 +29,7 @@ export default function AdminDashboardPage() {
         </div>
 
         {/* System Info */}
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 text-gray-800 dark:text-gray-900">
           <h2 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
             <span className="material-icons-round text-slate-400">info</span>
             Sistem Bilgisi
@@ -58,7 +58,7 @@ export default function AdminDashboardPage() {
 
 function StatCard({ title, value, icon, color, bg }: { title: string; value: string; icon: string; color: string; bg: string }) {
   return (
-    <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex items-center gap-4">
+    <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex items-center gap-4 text-gray-800 dark:text-gray-900">
       <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${bg} ${color}`}>
         <span className="material-icons-round">{icon}</span>
       </div>
@@ -72,7 +72,7 @@ function StatCard({ title, value, icon, color, bg }: { title: string; value: str
 
 function ActionRow({ title, desc, icon, href }: { title: string; desc: string; icon: string; href: string }) {
   return (
-    <a href={href} className="group flex items-start gap-4 p-3 rounded-xl hover:bg-slate-50 transition-colors border border-transparent hover:border-slate-100">
+    <a href={href} className="group flex items-start gap-4 p-3 rounded-xl hover:bg-slate-50 transition-colors border border-transparent hover:border-slate-100 text-gray-800 dark:text-gray-900">
       <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center text-slate-500 group-hover:bg-primary/10 group-hover:text-primary transition-colors mt-0.5">
         <span className="material-icons-round text-[20px]">{icon}</span>
       </div>

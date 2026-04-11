@@ -33,17 +33,17 @@ export default async function AdminYemekPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Form */}
         <div className="lg:col-span-1">
-          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 sticky top-6">
+          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 sticky top-6 text-gray-800 dark:text-gray-900">
             <h2 className="text-lg font-bold text-slate-800 mb-4">Yeni Menü Ekle</h2>
             <form action={createMenu} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">Tarih</label>
-                <input required type="date" name="date" className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50" />
+                <input required type="date" name="date" className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 text-gray-800 dark:text-gray-900" />
               </div>
               
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">Öğün</label>
-                <select required name="mealType" className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50">
+                <select required name="mealType" className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 text-gray-800 dark:text-gray-900">
                   <option value="ogle">Öğle Yemeği</option>
                   <option value="kahvalti">Kahvaltı (Pansiyon)</option>
                   <option value="aksam">Akşam Yemeği (Pansiyon)</option>
@@ -52,7 +52,7 @@ export default async function AdminYemekPage() {
 
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">Yemekler</label>
-                <textarea required name="items" rows={4} placeholder="Her satıra bir yemek (örn: Domates Çorbası\nEt Sote...)" className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50"></textarea>
+                <textarea required name="items" rows={4} placeholder="Her satıra bir yemek (örn: Domates Çorbası\nEt Sote...)" className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 text-gray-800 dark:text-gray-900"></textarea>
               </div>
 
               <button type="submit" className="w-full bg-primary hover:bg-primary-dark text-white font-medium py-2 px-4 rounded-lg transition-colors flex justify-center items-center gap-2">
@@ -65,8 +65,8 @@ export default async function AdminYemekPage() {
 
         {/* List */}
         <div className="lg:col-span-2">
-          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-            <div className="p-4 border-b border-slate-200 bg-slate-50 flex justify-between items-center">
+          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden text-gray-800 dark:text-gray-900">
+            <div className="p-4 border-b border-slate-200 bg-slate-50 flex justify-between items-center text-gray-800 dark:text-gray-900">
               <h2 className="font-bold text-slate-800">Son Eklenen Menüler</h2>
             </div>
             {menus.length === 0 ? (
@@ -77,7 +77,7 @@ export default async function AdminYemekPage() {
             ) : (
               <ul className="divide-y divide-slate-100">
                 {menus.map((m) => (
-                  <li key={m.id} className="p-4 hover:bg-slate-50">
+                  <li key={m.id} className="p-4 hover:bg-slate-50 text-gray-800 dark:text-gray-900">
                     <div className="flex justify-between items-start mb-2">
                       <div className="flex items-center gap-2">
                         <span className={`px-2 py-0.5 rounded text-xs font-bold uppercase ${

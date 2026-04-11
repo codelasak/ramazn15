@@ -14,12 +14,22 @@ export async function updateGoals(formData: FormData) {
   }
 
   const targetUniversity = formData.get("targetUniversity") as string;
-  const targetNet = formData.get("targetNet") as string;
+  const targetNetRaw = formData.get("targetNet") as string;
+
+  let targetNet: string | null = null;
+  if (targetNetRaw) {
+    const parsed = parseFloat(targetNetRaw);
+    if (!isNaN(parsed)) {
+      // YKS max placement score is 560
+      const capped = Math.min(Math.max(parsed, 0), 560);
+      targetNet = capped.toFixed(2);
+    }
+  }
 
   await db.update(users)
     .set({
       targetUniversity: targetUniversity || null,
-      targetNet: targetNet ? targetNet : null,
+      targetNet: targetNet,
       updatedAt: new Date(),
     })
     .where(eq(users.id, session.user.id));

@@ -16,7 +16,7 @@ export default async function AdminLayout({ children }: { children: ReactNode })
   }
 
   return (
-    <div className="min-h-dvh flex bg-slate-50">
+    <div className="min-h-dvh flex bg-slate-50 text-gray-800 dark:text-gray-900">
       {/* Sidebar Navigation */}
       <aside className="w-64 bg-slate-900 text-white flex flex-col hidden md:flex shrink-0">
         <div className="p-6 border-b border-white/10">
@@ -55,7 +55,7 @@ export default async function AdminLayout({ children }: { children: ReactNode })
       {/* Main Content Area */}
       <main className="flex-1 flex flex-col min-w-0 max-h-dvh overflow-hidden">
         {/* Mobile Header */}
-        <header className="md:hidden bg-white border-b border-slate-200 px-4 py-3 flex items-center justify-between">
+        <header className="md:hidden bg-white border-b border-slate-200 px-4 py-3 flex items-center justify-between text-gray-800 dark:text-gray-900">
           <div className="flex items-center gap-2">
             <span className="material-icons-round text-primary">admin_panel_settings</span>
             <span className="font-bold text-slate-800">AİHL Admin</span>
@@ -70,7 +70,7 @@ export default async function AdminLayout({ children }: { children: ReactNode })
       </main>
 
       {/* Mobile Bottom Nav */}
-      <nav className="md:hidden fixed bottom-0 inset-x-0 bg-white border-t border-slate-200 flex items-center justify-between px-2 pb-safe pt-1 z-50">
+      <nav className="md:hidden fixed bottom-0 inset-x-0 bg-white border-t border-slate-200 flex items-center justify-between px-2 pb-safe pt-1 z-50 text-gray-800 dark:text-gray-900">
         <MobileNavLink href="/admin" icon="dashboard" label="Özet" />
         <MobileNavLink href="/admin/duyurular" icon="campaign" label="Duyuru" />
         <MobileNavLink href="/admin/yemek" icon="restaurant" label="Yemek" />

@@ -91,16 +91,16 @@ export default function LoginScreen() {
           <h1 className="text-2xl font-bold text-gray-900 tracking-tight">
             15 Temmuz AİHL
           </h1>
-          <p className="text-gray-500 mt-1.5 text-sm font-medium">
+          <p className="text-gray-500 dark:text-gray-700 mt-1.5 text-sm font-medium">
             Geleceğe Adım At
           </p>
         </div>
 
         {/* Login Card */}
         <div className="w-full max-w-sm">
-          <div className="bg-white/80 backdrop-blur-xl rounded-3xl p-7 shadow-xl shadow-black/5 border border-white/60">
-            <h2 className="text-xl font-bold text-gray-800 mb-1">Giriş Yap</h2>
-            <p className="text-sm text-gray-500 mb-6">Öğrenci hesabınla giriş yap</p>
+          <div className="bg-white/80 backdrop-blur-xl rounded-3xl p-7 shadow-xl shadow-black/5 border border-white/60 text-gray-800 dark:text-gray-900">
+            <h2 className="text-xl font-bold text-gray-800 dark:text-gray-900 mb-1">Giriş Yap</h2>
+            <p className="text-sm text-gray-500 dark:text-gray-700 mb-6">Öğrenci hesabınla giriş yap</p>
 
             <form onSubmit={handleSubmit} className="space-y-4">
               {/* Email */}
@@ -109,7 +109,7 @@ export default function LoginScreen() {
                   E-posta
                 </label>
                 <div className="relative">
-                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 material-icons-round text-gray-400 text-xl">mail</span>
+                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 material-icons-round text-gray-400 dark:text-gray-600 text-xl">mail</span>
                   <input
                     id="email"
                     type="email"
@@ -129,7 +129,7 @@ export default function LoginScreen() {
                   Şifre
                 </label>
                 <div className="relative">
-                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 material-icons-round text-gray-400 text-xl">lock</span>
+                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 material-icons-round text-gray-400 dark:text-gray-600 text-xl">lock</span>
                   <input
                     id="password"
                     type={showPassword ? "text" : "password"}
@@ -144,7 +144,7 @@ export default function LoginScreen() {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-600 hover:text-gray-500 dark:text-gray-700 transition-colors"
                   >
                     <span className="material-icons-round text-xl">
                       {showPassword ? "visibility_off" : "visibility"}
@@ -195,7 +195,7 @@ export default function LoginScreen() {
           </div>
 
           {/* Register link */}
-          <p className="text-center mt-6 text-sm text-gray-500">
+          <p className="text-center mt-6 text-sm text-gray-500 dark:text-gray-700">
             Hesabın yok mu?{" "}
             <Link
               href="/kayit"
@@ -208,7 +208,7 @@ export default function LoginScreen() {
       </div>
 
       {/* Footer */}
-      <div className="relative z-10 text-center pb-6 text-xs text-gray-400">
+      <div className="relative z-10 text-center pb-6 text-xs text-gray-400 dark:text-gray-600">
         Bahçelievler 15 Temmuz Şehitleri AİHL © 2026
       </div>
     </div>

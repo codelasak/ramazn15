@@ -61,7 +61,7 @@ export default function NutritionScreen() {
             <h2 className="text-sm font-medium text-primary-dark mb-1 tracking-wide">RAMAZAN {ramadanDay}. GÜN</h2>
             <h1 className="text-2xl font-bold text-gray-900">Beslenme Rehberi</h1>
           </div>
-          <button className="p-2 bg-white rounded-full shadow-sm text-primary">
+          <button className="p-2 bg-white rounded-full shadow-sm text-primary text-gray-800 dark:text-gray-900">
             <span className="material-icons-round">notifications</span>
           </button>
         </div>
@@ -70,7 +70,7 @@ export default function NutritionScreen() {
         <div className="bg-gradient-to-br from-white to-mint-soft rounded-2xl p-5 shadow-sm border border-primary-light/30 flex items-center justify-between relative overflow-hidden">
           <div className="absolute -right-6 -top-6 w-24 h-24 bg-primary-light/30 rounded-full blur-xl" />
           <div>
-            <p className="text-sm text-gray-500 font-medium">İftar&apos;a Kalan Süre</p>
+            <p className="text-sm text-gray-500 dark:text-gray-700 font-medium">İftar&apos;a Kalan Süre</p>
             <div className="text-3xl font-bold text-primary mt-1">
               {iftarCountdown ?? "··:··:··"}
             </div>
@@ -100,14 +100,14 @@ export default function NutritionScreen() {
                 <span className="material-icons-round text-xl">bedtime</span>
               </span>
             </div>
-            <h3 className="text-xl font-bold text-gray-800">Sahur Menüsü</h3>
+            <h3 className="text-xl font-bold text-gray-800 dark:text-gray-900">Sahur Menüsü</h3>
             <div className="ml-auto flex items-center gap-2">
               {sahurDone ? (
                 <>
                   <svg className="w-5 h-5 text-primary-light animate-pulse" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M12,2L14.5,9H22L16,13.5L18.5,21L12,16.5L5.5,21L8,13.5L2,9H9.5L12,2Z" />
                   </svg>
-                  <span className="text-sm text-gray-400 font-medium">Tamamlandı</span>
+                  <span className="text-sm text-gray-400 dark:text-gray-600 font-medium">Tamamlandı</span>
                 </>
               ) : (
                 <span className="text-sm text-primary font-medium bg-mint-soft px-2 py-0.5 rounded-md border border-primary-light/30">Sırada</span>
@@ -120,20 +120,20 @@ export default function NutritionScreen() {
 
             {/* Sahur meal cards */}
             {sahur.loading ? (
-              <div className="ml-4 bg-white rounded-2xl p-4 shadow-sm border border-mint-soft">
-                <p className="text-gray-500">Yükleniyor…</p>
+              <div className="ml-4 bg-white rounded-2xl p-4 shadow-sm border border-mint-soft text-gray-800 dark:text-gray-900">
+                <p className="text-gray-500 dark:text-gray-700">Yükleniyor…</p>
               </div>
             ) : sahur.error ? (
-              <div className="ml-4 bg-white rounded-2xl p-4 shadow-sm border border-mint-soft">
+              <div className="ml-4 bg-white rounded-2xl p-4 shadow-sm border border-mint-soft text-gray-800 dark:text-gray-900">
                 <p className="text-red-500">Hata: {sahur.error}</p>
               </div>
             ) : (
               sahur.meals.slice(0, 2).map((m) => (
-                <div key={m.idMeal} className="bg-white rounded-2xl p-4 shadow-sm border border-mint-soft mb-4 hover:shadow-md transition-shadow duration-300 ml-4">
+                <div key={m.idMeal} className="bg-white rounded-2xl p-4 shadow-sm border border-mint-soft mb-4 hover:shadow-md transition-shadow duration-300 ml-4 text-gray-800 dark:text-gray-900">
                   <div className="flex gap-4">
                     {m.strMealThumb ? (
                       // eslint-disable-next-line @next/next/no-img-element
-                      <img src={m.strMealThumb} alt="" className="w-24 h-24 rounded-xl object-cover bg-gray-100" loading="lazy" />
+                      <img src={m.strMealThumb} alt="" className="w-24 h-24 rounded-xl object-cover bg-gray-100 text-gray-800 dark:text-gray-900" loading="lazy" />
                     ) : (
                       <div className="w-24 h-24 rounded-xl bg-mint-soft flex items-center justify-center">
                         <span className="material-icons-round text-primary-light text-3xl">restaurant</span>
@@ -141,7 +141,7 @@ export default function NutritionScreen() {
                     )}
                     <div className="flex-1">
                       <h4 className="font-bold text-lg text-gray-900 mb-1">{m.strMeal}</h4>
-                      <p className="text-sm text-gray-500 mb-3">
+                      <p className="text-sm text-gray-500 dark:text-gray-700 mb-3">
                         {[m.strArea, m.strCategory].filter(Boolean).join(" • ") || "Uzun süreli tokluk ve dengeli kan şekeri."}
                       </p>
                       <div className="flex flex-wrap gap-2">
@@ -165,8 +165,8 @@ export default function NutritionScreen() {
                 <span className="material-icons-round">medication</span>
               </div>
               <div className="flex-1">
-                <h5 className="font-bold text-gray-800">Tansiyon İlacı</h5>
-                <p className="text-sm text-gray-600 mt-1">Yemekten hemen önce 1 bardak su ile için.</p>
+                <h5 className="font-bold text-gray-800 dark:text-gray-900">Tansiyon İlacı</h5>
+                <p className="text-sm text-gray-500 dark:text-gray-700 mt-1">Yemekten hemen önce 1 bardak su ile için.</p>
               </div>
               <button
                 onClick={() => setSahurDone(true)}
@@ -201,7 +201,7 @@ export default function NutritionScreen() {
             ))}
           </div>
 
-          <p className="text-xs text-primary-dark mt-3 font-medium relative z-10 bg-white/40 inline-block px-3 py-1 rounded-full backdrop-blur-sm border border-primary-light/20">
+          <p className="text-xs text-primary-dark mt-3 font-medium relative z-10 bg-white/40 inline-block px-3 py-1 rounded-full backdrop-blur-sm border border-primary-light/20 text-gray-800 dark:text-gray-900">
             Hedef: 2.5 Litre (İftar ile Sahur arası)
           </p>
         </section>
@@ -215,7 +215,7 @@ export default function NutritionScreen() {
                 <span className="material-icons-round text-xl">wb_sunny</span>
               </span>
             </div>
-            <h3 className="text-xl font-bold text-gray-800">İftar Menüsü</h3>
+            <h3 className="text-xl font-bold text-gray-800 dark:text-gray-900">İftar Menüsü</h3>
             <div className="ml-auto flex items-center gap-2">
               <svg className="w-6 h-6 text-primary-light drop-shadow-lg" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M12,2C12.55,2 13,2.45 13,3V4C14.66,4.5 16,6.05 16,8V16C16,18.21 14.21,20 12,20C9.79,20 8,18.21 8,16V8C8,6.05 9.34,4.5 11,4V3C11,2.45 11.45,2 12,2M11,8V16H13V8H11Z" />
@@ -229,16 +229,16 @@ export default function NutritionScreen() {
 
             {/* Iftar meal cards */}
             {iftar.loading ? (
-              <div className="ml-4 bg-white rounded-2xl p-4 shadow-sm border border-mint-soft">
-                <p className="text-gray-500">Yükleniyor…</p>
+              <div className="ml-4 bg-white rounded-2xl p-4 shadow-sm border border-mint-soft text-gray-800 dark:text-gray-900">
+                <p className="text-gray-500 dark:text-gray-700">Yükleniyor…</p>
               </div>
             ) : iftar.error ? (
-              <div className="ml-4 bg-white rounded-2xl p-4 shadow-sm border border-mint-soft">
+              <div className="ml-4 bg-white rounded-2xl p-4 shadow-sm border border-mint-soft text-gray-800 dark:text-gray-900">
                 <p className="text-red-500">Hata: {iftar.error}</p>
               </div>
             ) : (
               iftar.meals.slice(0, 2).map((m, idx) => (
-                <div key={m.idMeal} className="bg-white rounded-2xl p-4 shadow-sm border border-mint-soft mb-3 hover:shadow-md transition-shadow duration-300 ml-4 group">
+                <div key={m.idMeal} className="bg-white rounded-2xl p-4 shadow-sm border border-mint-soft mb-3 hover:shadow-md transition-shadow duration-300 ml-4 group text-gray-800 dark:text-gray-900">
                   <div className="flex gap-4">
                     <div className="relative">
                       {m.strMealThumb ? (
@@ -246,7 +246,7 @@ export default function NutritionScreen() {
                         <img
                           src={m.strMealThumb}
                           alt=""
-                          className="w-24 h-24 rounded-xl object-cover bg-gray-100 group-hover:scale-105 transition-transform duration-500"
+                          className="w-24 h-24 rounded-xl object-cover bg-gray-100 group-hover:scale-105 transition-transform duration-500 text-gray-800 dark:text-gray-900"
                           loading="lazy"
                         />
                       ) : (
@@ -258,7 +258,7 @@ export default function NutritionScreen() {
                     </div>
                     <div className="flex-1">
                       <h4 className="font-bold text-lg text-gray-900 mb-1">{m.strMeal}</h4>
-                      <p className="text-sm text-gray-500 mb-2">
+                      <p className="text-sm text-gray-500 dark:text-gray-700 mb-2">
                         {[m.strArea, m.strCategory].filter(Boolean).join(" • ") || "Hafif ve dengeli bir lezzet."}
                       </p>
                       <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs font-semibold border ${
@@ -276,20 +276,20 @@ export default function NutritionScreen() {
             )}
 
             {/* Insulin reminder for iftar */}
-            <div className="bg-red-50 rounded-xl p-4 flex items-start gap-3 border border-red-100 ml-4 relative overflow-hidden">
+            <div className="bg-red-50 rounded-xl p-4 flex items-start gap-3 border border-red-100 ml-4 relative overflow-hidden text-gray-800 dark:text-gray-900">
               <div className="absolute -left-4 -top-4 w-16 h-16 bg-red-100/50 rounded-full blur-xl" />
               <div className="bg-red-500 text-white p-2 rounded-full shrink-0 shadow-lg shadow-red-200/50 relative z-10">
                 <span className="material-icons-round">vaccines</span>
               </div>
               <div className="flex-1 relative z-10">
-                <h5 className="font-bold text-gray-800">İnsülin</h5>
-                <p className="text-sm text-gray-600 mt-1">Yemekten 15 dakika önce uygulayın.</p>
+                <h5 className="font-bold text-gray-800 dark:text-gray-900">İnsülin</h5>
+                <p className="text-sm text-gray-500 dark:text-gray-700 mt-1">Yemekten 15 dakika önce uygulayın.</p>
               </div>
               <button
                 onClick={() => setMedicineTaken(true)}
                 className={`self-center px-4 py-2 rounded-lg text-sm font-semibold shadow-lg transition-all transform active:scale-95 relative z-10 ${
                   medicineTaken
-                    ? "bg-gray-200 text-gray-500 shadow-none"
+                    ? "bg-gray-200 text-gray-500 dark:text-gray-700 shadow-none"
                     : "bg-gradient-to-r from-primary to-primary-dark hover:from-primary-dark hover:to-primary text-white shadow-primary-light/50"
                 }`}
                 disabled={medicineTaken}

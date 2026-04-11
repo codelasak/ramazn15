@@ -119,7 +119,7 @@ export default function RegisterScreen() {
             <span className="material-icons-round text-white text-3xl">school</span>
           </div>
           <h1 className="text-xl font-bold text-gray-900">Kayıt Ol</h1>
-          <p className="text-gray-500 mt-1 text-sm">15 Temmuz AİHL Öğrenci Hesabı</p>
+          <p className="text-gray-500 dark:text-gray-700 mt-1 text-sm">15 Temmuz AİHL Öğrenci Hesabı</p>
         </div>
 
         {/* Step indicator */}
@@ -131,22 +131,22 @@ export default function RegisterScreen() {
             <div className={`h-full bg-primary transition-all duration-500 ${step === 2 ? "w-full" : "w-0"}`} />
           </div>
           <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold transition-all ${
-            step === 2 ? "bg-primary text-white shadow-md shadow-primary/30" : "bg-gray-100 text-gray-400"
+            step === 2 ? "bg-primary text-white shadow-md shadow-primary/30" : "bg-gray-100 text-gray-400 dark:text-gray-600"
           }`}>2</div>
         </div>
 
         <div className="w-full max-w-sm">
-          <div className="bg-white/80 backdrop-blur-xl rounded-3xl p-7 shadow-xl shadow-black/5 border border-white/60">
+          <div className="bg-white/80 backdrop-blur-xl rounded-3xl p-7 shadow-xl shadow-black/5 border border-white/60 text-gray-800 dark:text-gray-900">
             {step === 1 ? (
               <>
-                <h2 className="text-lg font-bold text-gray-800 mb-1">Hesap Bilgileri</h2>
-                <p className="text-sm text-gray-500 mb-5">Temel bilgilerini gir</p>
+                <h2 className="text-lg font-bold text-gray-800 dark:text-gray-900 mb-1">Hesap Bilgileri</h2>
+                <p className="text-sm text-gray-500 dark:text-gray-700 mb-5">Temel bilgilerini gir</p>
 
                 <form onSubmit={handleStep1} className="space-y-4">
                   <div>
                     <label htmlFor="name" className="block text-sm font-semibold text-gray-700 mb-1.5">Ad Soyad</label>
                     <div className="relative">
-                      <span className="absolute left-3.5 top-1/2 -translate-y-1/2 material-icons-round text-gray-400 text-xl">person</span>
+                      <span className="absolute left-3.5 top-1/2 -translate-y-1/2 material-icons-round text-gray-400 dark:text-gray-600 text-xl">person</span>
                       <input
                         id="name"
                         type="text"
@@ -162,7 +162,7 @@ export default function RegisterScreen() {
                   <div>
                     <label htmlFor="reg-email" className="block text-sm font-semibold text-gray-700 mb-1.5">E-posta</label>
                     <div className="relative">
-                      <span className="absolute left-3.5 top-1/2 -translate-y-1/2 material-icons-round text-gray-400 text-xl">mail</span>
+                      <span className="absolute left-3.5 top-1/2 -translate-y-1/2 material-icons-round text-gray-400 dark:text-gray-600 text-xl">mail</span>
                       <input
                         id="reg-email"
                         type="email"
@@ -178,7 +178,7 @@ export default function RegisterScreen() {
                   <div>
                     <label htmlFor="reg-pass" className="block text-sm font-semibold text-gray-700 mb-1.5">Şifre</label>
                     <div className="relative">
-                      <span className="absolute left-3.5 top-1/2 -translate-y-1/2 material-icons-round text-gray-400 text-xl">lock</span>
+                      <span className="absolute left-3.5 top-1/2 -translate-y-1/2 material-icons-round text-gray-400 dark:text-gray-600 text-xl">lock</span>
                       <input
                         id="reg-pass"
                         type={showPassword ? "text" : "password"}
@@ -192,7 +192,7 @@ export default function RegisterScreen() {
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-600 hover:text-gray-500 dark:text-gray-700"
                       >
                         <span className="material-icons-round text-xl">{showPassword ? "visibility_off" : "visibility"}</span>
                       </button>
@@ -202,7 +202,7 @@ export default function RegisterScreen() {
                   <div>
                     <label htmlFor="reg-confirm" className="block text-sm font-semibold text-gray-700 mb-1.5">Şifre Tekrar</label>
                     <div className="relative">
-                      <span className="absolute left-3.5 top-1/2 -translate-y-1/2 material-icons-round text-gray-400 text-xl">lock</span>
+                      <span className="absolute left-3.5 top-1/2 -translate-y-1/2 material-icons-round text-gray-400 dark:text-gray-600 text-xl">lock</span>
                       <input
                         id="reg-confirm"
                         type="password"
@@ -236,13 +236,13 @@ export default function RegisterScreen() {
                 <div className="flex items-center gap-2 mb-5">
                   <button
                     onClick={() => { setStep(1); setError(""); }}
-                    className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors"
+                    className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors text-gray-800 dark:text-gray-900"
                   >
-                    <span className="material-icons-round text-gray-500 text-xl">arrow_back</span>
+                    <span className="material-icons-round text-gray-500 dark:text-gray-700 text-xl">arrow_back</span>
                   </button>
                   <div>
-                    <h2 className="text-lg font-bold text-gray-800">Okul Bilgileri</h2>
-                    <p className="text-sm text-gray-500">Sınıf ve alan bilgilerini seç</p>
+                    <h2 className="text-lg font-bold text-gray-800 dark:text-gray-900">Okul Bilgileri</h2>
+                    <p className="text-sm text-gray-500 dark:text-gray-700">Sınıf ve alan bilgilerini seç</p>
                   </div>
                 </div>
 
@@ -251,7 +251,7 @@ export default function RegisterScreen() {
                   <div>
                     <label htmlFor="class" className="block text-sm font-semibold text-gray-700 mb-1.5">Sınıf</label>
                     <div className="relative">
-                      <span className="absolute left-3.5 top-1/2 -translate-y-1/2 material-icons-round text-gray-400 text-xl">class</span>
+                      <span className="absolute left-3.5 top-1/2 -translate-y-1/2 material-icons-round text-gray-400 dark:text-gray-600 text-xl">class</span>
                       <select
                         id="class"
                         value={className}
@@ -271,7 +271,7 @@ export default function RegisterScreen() {
                   <div>
                     <label htmlFor="dept" className="block text-sm font-semibold text-gray-700 mb-1.5">Alan</label>
                     <div className="relative">
-                      <span className="absolute left-3.5 top-1/2 -translate-y-1/2 material-icons-round text-gray-400 text-xl">science</span>
+                      <span className="absolute left-3.5 top-1/2 -translate-y-1/2 material-icons-round text-gray-400 dark:text-gray-600 text-xl">science</span>
                       <select
                         id="dept"
                         value={department}
@@ -300,9 +300,9 @@ export default function RegisterScreen() {
                             : "border-gray-200 hover:border-gray-300 bg-white"
                         }`}
                       >
-                        <span className={`material-icons-round text-3xl ${isBoarder === true ? "text-primary" : "text-gray-400"}`}>apartment</span>
-                        <span className={`text-sm font-semibold ${isBoarder === true ? "text-primary" : "text-gray-600"}`}>Yurtlu</span>
-                        <span className="text-[11px] text-gray-400">Pansiyonda kalıyorum</span>
+                        <span className={`material-icons-round text-3xl ${isBoarder === true ? "text-primary" : "text-gray-400 dark:text-gray-600"}`}>apartment</span>
+                        <span className={`text-sm font-semibold ${isBoarder === true ? "text-primary" : "text-gray-500 dark:text-gray-700"}`}>Yurtlu</span>
+                        <span className="text-[11px] text-gray-400 dark:text-gray-600">Pansiyonda kalıyorum</span>
                       </button>
                       <button
                         type="button"
@@ -313,9 +313,9 @@ export default function RegisterScreen() {
                             : "border-gray-200 hover:border-gray-300 bg-white"
                         }`}
                       >
-                        <span className={`material-icons-round text-3xl ${isBoarder === false ? "text-primary" : "text-gray-400"}`}>home</span>
-                        <span className={`text-sm font-semibold ${isBoarder === false ? "text-primary" : "text-gray-600"}`}>Evci</span>
-                        <span className="text-[11px] text-gray-400">Evden geliyorum</span>
+                        <span className={`material-icons-round text-3xl ${isBoarder === false ? "text-primary" : "text-gray-400 dark:text-gray-600"}`}>home</span>
+                        <span className={`text-sm font-semibold ${isBoarder === false ? "text-primary" : "text-gray-500 dark:text-gray-700"}`}>Evci</span>
+                        <span className="text-[11px] text-gray-400 dark:text-gray-600">Evden geliyorum</span>
                       </button>
                     </div>
                   </div>
@@ -350,7 +350,7 @@ export default function RegisterScreen() {
           </div>
 
           {/* Login link */}
-          <p className="text-center mt-6 text-sm text-gray-500">
+          <p className="text-center mt-6 text-sm text-gray-500 dark:text-gray-700">
             Zaten bir hesabın var mı?{" "}
             <Link href="/giris" className="text-primary font-semibold hover:text-primary-dark transition-colors">
               Giriş Yap

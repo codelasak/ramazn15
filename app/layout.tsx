@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Lexend } from "next/font/google";
 import "./globals.css";
 import Providers from "./providers";
@@ -14,13 +14,23 @@ export const metadata: Metadata = {
   description: "Bahçelievler 15 Temmuz Şehitleri AİHL Öğrenci Uygulaması — Geleceğe Adım At",
 };
 
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#F5F9F5" },
+    { media: "(prefers-color-scheme: dark)", color: "#1A2F23" },
+  ],
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="tr" className="light">
+    <html lang="tr" suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
@@ -37,7 +47,7 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className={`${lexend.variable} font-display antialiased`}>
+      <body className={`${lexend.variable} font-display antialiased bg-background text-foreground`}>
         <Providers>{children}</Providers>
       </body>
     </html>

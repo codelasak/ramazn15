@@ -33,14 +33,14 @@ function extractTodayTimes(payload: unknown): PrayerTimes | null {
 }
 
 export function usePrayerTimes(): UsePrayerTimesResult {
-  const [districtId, setDistrictId] = useState<number | null>(null);
+  const [districtId, setDistrictId] = useState<number | null>(9541);
   const [times, setTimes] = useState<PrayerTimes | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const readDistrictFromStorage = useCallback(() => {
     const loc = loadStoredLocation();
-    setDistrictId(loc?.districtId ?? null);
+    setDistrictId(loc?.districtId ?? 9541); // Default to Istanbul (9541)
   }, []);
 
   useEffect(() => {

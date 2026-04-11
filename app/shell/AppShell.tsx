@@ -36,7 +36,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
       </main>
 
       <nav
-        className="fixed inset-x-0 bottom-0 bg-white/95 backdrop-blur-xl border-t border-gray-100 z-50 rounded-t-3xl"
+        className="fixed inset-x-0 bottom-0 bg-white/95 backdrop-blur-xl border-t border-gray-100 z-50 rounded-t-3xl text-gray-800 dark:text-gray-900"
         style={{ boxShadow: "0 -4px 20px -4px rgba(76,140,100,0.15)" }}
         aria-label="Alt menü"
       >
@@ -68,7 +68,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
                     className={`text-[10px] mt-1 ${
                       isActive
                         ? "font-bold text-primary"
-                        : "font-medium text-gray-400"
+                        : "font-medium text-gray-400 dark:text-gray-600"
                     }`}
                   >
                     {item.label}
@@ -84,7 +84,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
                 className={`flex flex-col items-center gap-1 w-12 transition-colors ${
                   isActive
                     ? "text-primary"
-                    : "text-gray-400 hover:text-primary"
+                    : "text-gray-400 dark:text-gray-600 hover:text-primary"
                 }`}
                 aria-current={isActive ? "page" : undefined}
               >
