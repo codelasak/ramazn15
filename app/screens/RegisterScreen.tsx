@@ -3,6 +3,9 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useAuth } from "../lib/auth-context";
+import { ApiError } from "../lib/api-client";
+import { isNativePlatform } from "../lib/platform";
 
 const CLASS_OPTIONS = [
   "9A", "9B", "9C", "9D",
@@ -17,8 +20,11 @@ const DEPARTMENT_OPTIONS = [
   { value: "hazirlik", label: "Hazırlık" },
 ];
 
+type Department = "teknoloji_fen" | "fen_sosyal" | "hazirlik";
+
 export default function RegisterScreen() {
   const router = useRouter();
+  const { register } = useAuth();
   const [step, setStep] = useState<1 | 2>(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -61,42 +67,39 @@ export default function RegisterScreen() {
     setLoading(true);
 
     try {
-      const res = await fetch("/api/kayit", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name,
-          email,
-          password,
-          className,
-          department,
-          isBoarder,
-        }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        setError(data.error ?? "Bir hata oluştu.");
-        return;
-      }
-
-      // Auto-sign in after register
-      const { signIn } = await import("next-auth/react");
-      const signInRes = await signIn("credentials", {
+      // 1) JWT register (yeni sistem - hem web hem mobil).
+      await register({
+        name,
         email,
         password,
-        redirect: false,
+        className,
+        department: department as Department,
+        isBoarder: isBoarder === true,
       });
 
-      if (signInRes?.ok) {
-        router.push("/");
-        router.refresh();
-      } else {
-        router.push("/giris");
+      // 2) Web'de mevcut useSession kullanan sayfalar icin NextAuth
+      //    oturumunu da ac. Native'de gereksiz.
+      if (!isNativePlatform()) {
+        try {
+          const { signIn } = await import("next-auth/react");
+          await signIn("credentials", {
+            email,
+            password,
+            redirect: false,
+          });
+        } catch {
+          // sessizce gec; JWT registration basarili.
+        }
       }
-    } catch {
-      setError("Bir hata oluştu. Lütfen tekrar deneyin.");
+
+      router.push("/");
+      router.refresh();
+    } catch (err) {
+      if (err instanceof ApiError) {
+        setError(err.message);
+      } else {
+        setError("Bir hata oluştu. Lütfen tekrar deneyin.");
+      }
     } finally {
       setLoading(false);
     }

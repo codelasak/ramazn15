@@ -1,12 +1,15 @@
 "use client";
 
-import { signIn } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useAuth } from "../lib/auth-context";
+import { ApiError } from "../lib/api-client";
+import { isNativePlatform } from "../lib/platform";
 
 export default function LoginScreen() {
   const router = useRouter();
+  const { login } = useAuth();
   const isDev = process.env.NODE_ENV === "development";
   const devLoginEmail = process.env.NEXT_PUBLIC_DEV_LOGIN_EMAIL;
   const devLoginPassword = process.env.NEXT_PUBLIC_DEV_LOGIN_PASSWORD;
@@ -18,26 +21,41 @@ export default function LoginScreen() {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
+  async function performLogin(emailVal: string, passwordVal: string): Promise<void> {
+    // 1) JWT login (yeni sistem - hem web hem mobil).
+    await login({ email: emailVal, password: passwordVal });
+
+    // 2) Web tarafinda mevcut useSession tabanli sayfalar icin NextAuth
+    //    oturumunu da besle. Native'de NextAuth route'lari mevcut degil.
+    if (!isNativePlatform()) {
+      try {
+        const { signIn } = await import("next-auth/react");
+        await signIn("credentials", {
+          email: emailVal,
+          password: passwordVal,
+          redirect: false,
+        });
+      } catch {
+        // NextAuth'a paralel oturum acilamadi; JWT zaten basarili.
+      }
+    }
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
     setLoading(true);
 
     try {
-      const res = await signIn("credentials", {
-        email,
-        password,
-        redirect: false,
-      });
-
-      if (res?.error) {
+      await performLogin(email, password);
+      router.push("/");
+      router.refresh();
+    } catch (err) {
+      if (err instanceof ApiError && err.status === 401) {
         setError("E-posta veya şifre hatalı.");
       } else {
-        router.push("/");
-        router.refresh();
+        setError("Bir hata oluştu. Lütfen tekrar deneyin.");
       }
-    } catch {
-      setError("Bir hata oluştu. Lütfen tekrar deneyin.");
     } finally {
       setLoading(false);
     }
@@ -50,20 +68,15 @@ export default function LoginScreen() {
     setLoading(true);
 
     try {
-      const res = await signIn("credentials", {
-        email: devLoginEmail,
-        password: devLoginPassword,
-        redirect: false,
-      });
-
-      if (res?.error) {
+      await performLogin(devLoginEmail, devLoginPassword);
+      router.push("/");
+      router.refresh();
+    } catch (err) {
+      if (err instanceof ApiError && err.status === 401) {
         setError("Dev hızlı giriş başarısız oldu. Ortam değişkenlerini kontrol edin.");
       } else {
-        router.push("/");
-        router.refresh();
+        setError("Bir hata oluştu. Lütfen tekrar deneyin.");
       }
-    } catch {
-      setError("Bir hata oluştu. Lütfen tekrar deneyin.");
     } finally {
       setLoading(false);
     }
