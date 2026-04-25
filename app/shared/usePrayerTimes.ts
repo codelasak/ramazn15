@@ -61,7 +61,7 @@ export function usePrayerTimes(): UsePrayerTimesResult {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`/api/imsakiyem/prayer-times?districtId=${districtId}`, {
+      const res = await fetch(`/api/diyanet/prayer-times?districtId=${districtId}`, {
         cache: "no-store",
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
