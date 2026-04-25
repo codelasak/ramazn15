@@ -31,6 +31,14 @@ Match: cert + profil sync (appstore)
 
 TestFlight'a build + upload
 
+### ios metadata
+
+```sh
+[bundle exec] fastlane ios metadata
+```
+
+App Store Connect'e SADECE metadata + screenshot upload (binary atlanir)
+
 ### ios release
 
 ```sh

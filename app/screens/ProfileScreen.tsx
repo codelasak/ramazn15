@@ -395,8 +395,8 @@ export default function ProfileScreen() {
           </div>
 
           {showDeleteDialog && (
-            <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-              <div className="w-full max-w-sm bg-white rounded-3xl p-6 shadow-2xl text-gray-800">
+            <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4 overflow-y-auto">
+              <div className="w-full max-w-sm bg-white rounded-3xl p-6 shadow-2xl text-gray-800 max-h-[calc(100dvh-2rem)] overflow-y-auto my-auto">
                 <div className="flex items-center gap-3 mb-3">
                   <div className="w-12 h-12 rounded-2xl bg-red-50 flex items-center justify-center">
                     <span className="material-icons-round text-red-600 text-2xl">delete_forever</span>

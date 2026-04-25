@@ -130,6 +130,23 @@ platform :ios do
     )
   end
 
+  desc "App Store Connect'e SADECE metadata + screenshot upload (binary atlanir)"
+  lane :metadata do
+    api_key = load_app_store_api_key
+
+    upload_to_app_store(
+      api_key: api_key,
+      skip_binary_upload: true,
+      skip_metadata: false,
+      skip_screenshots: false,
+      submit_for_review: false,
+      force: true,
+      precheck_include_in_app_purchases: false,
+      run_precheck_before_submit: false,
+      overwrite_screenshots: true
+    )
+  end
+
   desc "App Store'a production build + upload (manual review submit)"
   lane :release do
     api_key = load_app_store_api_key
