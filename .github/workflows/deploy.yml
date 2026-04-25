@@ -1,40 +1,28 @@
-name: Deploy to Hayati Server
+name: Deploy notification
 
 on:
   push:
     branches: [main]
 
+# Bilgi notu: bu repo artik Hayati uzerindeki webhook listener
+# (https://deploy.fennaver.tech) ile deploy edilir. GitHub Actions
+# uzerinden SSH-via-cloudflared deploy'u kullanmiyoruz cunku Cloudflare
+# tarafindaki Bot Fight Mode "websocket: bad handshake" hatasi veriyor.
+#
+# Akis:
+#   GitHub push (main)
+#     -> GitHub Webhook POST https://deploy.fennaver.tech (ID 611092806)
+#       -> Cloudflare Tunnel -> Hayati :9500 (deploy-webhook.py)
+#         -> git pull + npm install + npm run build + systemctl restart
+#         -> health check -> Telegram bildirim
+#
+# Webhook secret + log: ~/HAYATI-SERVER.md icinde.
+
 jobs:
-  deploy:
+  notice:
     runs-on: ubuntu-latest
     steps:
-      - name: Install cloudflared
+      - name: Notice
         run: |
-          curl -fsSL https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb -o cloudflared.deb
-          sudo dpkg -i cloudflared.deb
-
-      - name: Setup SSH via Cloudflare Tunnel
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
-          chmod 600 ~/.ssh/deploy_key
-          cat >> ~/.ssh/config << 'EOF'
-          Host hayati-deploy
-            HostName deploy.fennaver.tech
-            User hayati
-            IdentityFile ~/.ssh/deploy_key
-            ProxyCommand cloudflared access ssh --hostname %h
-            StrictHostKeyChecking no
-          EOF
-
-      - name: Deploy
-        run: |
-          ssh hayati-deploy << 'SCRIPT'
-            cd ~/apps/ramazan15
-            git pull origin main
-            npm install
-            npm run build
-            cp -r .next/static .next/standalone/.next/static
-            cp -r public .next/standalone/public 2>/dev/null || true
-            sudo systemctl restart ramazan15
-          SCRIPT
+          echo "Deploy is handled by Hayati webhook listener on https://deploy.fennaver.tech"
+          echo "Check log: ssh hayati-ts 'tail -f /var/log/deploy-webhook.log'"
