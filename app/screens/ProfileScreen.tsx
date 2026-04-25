@@ -3,7 +3,7 @@
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
-import { updateGoals } from "../profil/actions";
+import { updateGoals, updateProfile } from "../profil/actions";
 import { useTheme } from "next-themes";
 
 const DEPARTMENT_LABELS: Record<string, string> = {
@@ -13,11 +13,12 @@ const DEPARTMENT_LABELS: Record<string, string> = {
 };
 
 export default function ProfileScreen({ dbUser }: { dbUser: any }) {
-  const { data: session, status } = useSession();
+  const { data: session, status, update: updateSession } = useSession();
   const router = useRouter();
   
   const [isPending, startTransition] = useTransition();
   const [goalSaved, setGoalSaved] = useState(false);
+  const [profileSaved, setProfileSaved] = useState(false);
   const { theme, setTheme } = useTheme();
 
   useEffect(() => {
@@ -52,10 +53,25 @@ export default function ProfileScreen({ dbUser }: { dbUser: any }) {
     });
   };
 
+  const handleProfileSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    startTransition(async () => {
+      try {
+        await updateProfile(formData);
+        setProfileSaved(true);
+        setTimeout(() => setProfileSaved(false), 3000);
+        router.refresh();
+      } catch (err) {
+        console.error(err);
+      }
+    });
+  };
+
   return (
     <div className="relative min-h-dvh">
       {/* Background */}
-      <div className="absolute top-0 left-0 right-0 h-56 bg-gradient-to-br from-primary to-primary-dark dark:from-black/40 dark:to-black/10 dark:border-b dark:border-white/5 rounded-b-[2.5rem] shadow-sm" />
+      <div className="absolute top-0 left-0 right-0 h-56 bg-linear-to-br from-primary to-primary-dark dark:from-black/40 dark:to-black/10 dark:border-b dark:border-white/5 rounded-b-[2.5rem] shadow-sm" />
       <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/4 translate-x-1/4" />
       <div className="absolute top-20 left-10 w-32 h-32 bg-mint-soft/10 rounded-full blur-2xl" />
 
@@ -64,14 +80,14 @@ export default function ProfileScreen({ dbUser }: { dbUser: any }) {
           <div className="w-24 h-24 mx-auto rounded-full bg-white/20 backdrop-blur-sm border-4 border-white/40 flex items-center justify-center text-white text-4xl font-bold shadow-xl">
             {initial}
           </div>
-          <h1 className="text-xl font-bold text-white mt-4">{user.name}</h1>
+          <h1 className="text-xl font-bold text-white mt-4">{dbUser.name}</h1>
           <p className="text-white/70 text-sm mt-0.5">{user.email}</p>
           <div className="flex items-center justify-center gap-2 mt-3">
-            <span className="bg-gray-100 text-gray-800 dark:text-gray-900 dark:bg-gray-800 dark:text-gray-100 text-xs font-bold px-3 py-1.5 rounded-full shadow-sm">
-              {user.className ?? "—"}
+            <span className="bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-100 text-xs font-bold px-3 py-1.5 rounded-full shadow-sm">
+              {dbUser.className ?? "—"}
             </span>
-            <span className="bg-gray-100 text-gray-800 dark:text-gray-900 dark:bg-gray-800 dark:text-gray-100 text-xs font-bold px-3 py-1.5 rounded-full shadow-sm">
-              {user.isBoarder ? "🏠 Yurtlu" : "🚌 Evci"}
+            <span className="bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-100 text-xs font-bold px-3 py-1.5 rounded-full shadow-sm">
+              {dbUser.isBoarder ? "🏠 Yurtlu" : "🚌 Evci"}
             </span>
           </div>
         </header>
@@ -124,6 +140,87 @@ export default function ProfileScreen({ dbUser }: { dbUser: any }) {
                 </p>
               </div>
             </div>
+          </div>
+
+          {/* Profile Edit Section */}
+          <div className="bg-white rounded-2xl shadow-lg shadow-black/5 border border-gray-100 p-5 text-gray-800 dark:text-gray-900">
+            <h3 className="font-bold text-gray-800 dark:text-gray-900 mb-4 flex items-center gap-2">
+              <span className="material-icons-round text-primary text-xl">edit</span>
+              Profil Düzenle
+            </h3>
+            
+            <form onSubmit={handleProfileSubmit} className="space-y-4">
+              <div>
+                <label className="block text-xs font-medium text-gray-500 dark:text-gray-700 mb-1">Ad Soyad</label>
+                <input 
+                  name="name"
+                  type="text" 
+                  defaultValue={dbUser.name ?? ""}
+                  placeholder="Adınız Soyadınız" 
+                  required
+                  className="w-full bg-gray-50 border border-gray-200 text-gray-800 dark:text-gray-900 placeholder-gray-400 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition duration-200"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-500 dark:text-gray-700 mb-2">Yatılılık Durumu</label>
+                <div className="flex gap-3">
+                  <label className={`flex-1 flex items-center justify-center gap-2 p-3 rounded-xl border cursor-pointer transition-all ${
+                    dbUser.isBoarder ? 'bg-primary/10 border-primary/20 text-primary' : 'bg-gray-50 border-gray-200 text-gray-500'
+                  }`}>
+                    <input 
+                      type="radio" 
+                      name="isBoarder" 
+                      value="true" 
+                      defaultChecked={dbUser.isBoarder}
+                      className="sr-only"
+                      onChange={(e) => {
+                        const labels = e.target.closest('.flex')?.querySelectorAll('label');
+                        labels?.forEach((l, i) => {
+                          if (i === 0) {
+                            l.className = 'flex-1 flex items-center justify-center gap-2 p-3 rounded-xl border cursor-pointer transition-all bg-primary/10 border-primary/20 text-primary';
+                          } else {
+                            l.className = 'flex-1 flex items-center justify-center gap-2 p-3 rounded-xl border cursor-pointer transition-all bg-gray-50 border-gray-200 text-gray-500';
+                          }
+                        });
+                      }}
+                    />
+                    <span className="material-icons-round text-sm">apartment</span>
+                    <span className="text-sm font-semibold">Yurtlu</span>
+                  </label>
+                  <label className={`flex-1 flex items-center justify-center gap-2 p-3 rounded-xl border cursor-pointer transition-all ${
+                    !dbUser.isBoarder ? 'bg-primary/10 border-primary/20 text-primary' : 'bg-gray-50 border-gray-200 text-gray-500'
+                  }`}>
+                    <input 
+                      type="radio" 
+                      name="isBoarder" 
+                      value="false" 
+                      defaultChecked={!dbUser.isBoarder}
+                      className="sr-only"
+                      onChange={(e) => {
+                        const labels = e.target.closest('.flex')?.querySelectorAll('label');
+                        labels?.forEach((l, i) => {
+                          if (i === 1) {
+                            l.className = 'flex-1 flex items-center justify-center gap-2 p-3 rounded-xl border cursor-pointer transition-all bg-primary/10 border-primary/20 text-primary';
+                          } else {
+                            l.className = 'flex-1 flex items-center justify-center gap-2 p-3 rounded-xl border cursor-pointer transition-all bg-gray-50 border-gray-200 text-gray-500';
+                          }
+                        });
+                      }}
+                    />
+                    <span className="material-icons-round text-sm">home</span>
+                    <span className="text-sm font-semibold">Evci</span>
+                  </label>
+                </div>
+              </div>
+              
+              <button 
+                type="submit" 
+                disabled={isPending}
+                className="w-full bg-primary hover:bg-primary-dark active:scale-[0.98] text-white font-semibold py-3 rounded-xl transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed"
+              >
+                {isPending ? "Kaydediliyor..." : profileSaved ? "Profil Güncellendi! ✅" : "Profili Güncelle"}
+              </button>
+            </form>
           </div>
 
           {/* Goal Setting Section */}
@@ -210,6 +307,14 @@ export default function ProfileScreen({ dbUser }: { dbUser: any }) {
                 Admin Paneli
               </button>
             )}
+
+            <button
+              onClick={() => router.push("/developers")}
+              className="w-full bg-emerald-500 hover:bg-emerald-600 text-white py-3.5 rounded-xl font-semibold text-sm shadow-lg shadow-emerald-500/20 transition-all flex items-center justify-center gap-2"
+            >
+              <span className="material-icons-round text-lg">groups</span>
+              Geliştirici Ekibi
+            </button>
 
             {/* Sign Out */}
             <button

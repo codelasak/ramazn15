@@ -78,15 +78,13 @@ function StatCard({ title, value, icon, color, bg, href }: { title: string; valu
         <p className="text-sm font-medium text-slate-500">{title}</p>
         <p className="text-2xl font-bold text-slate-800">{value}</p>
       </div>
-      {href && (
-        <span className="material-icons-round text-slate-300 group-hover:text-primary transition-colors">edit</span>
-      )}
+      {href ? (
+        <span className="material-icons-round text-slate-300 group-hover:text-primary transition-colors">chevron_right</span>
+      ) : null}
     </div>
   );
 
-  if (href) {
-    return <Link href={href}>{content}</Link>;
-  }
+  if (href) return <Link href={href}>{content}</Link>;
   return content;
 }
 

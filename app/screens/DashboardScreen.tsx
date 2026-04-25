@@ -11,8 +11,8 @@ const DAY_NAMES = ["Pazar", "Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cu
 
 function formatTurkishDate(d: Date): string {
   const months = [
-    "Ocak","Şubat","Mart","Nisan","Mayıs","Haziran",
-    "Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık",
+    "Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran",
+    "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık",
   ];
   return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}, ${DAY_NAMES[d.getDay()]}`;
 }
@@ -40,6 +40,7 @@ interface DashboardScreenProps {
     title: string;
     examDate: string;
     examType: string;
+    subject?: string | null;
   } | null;
   studySessions?: any[];
   schedules?: any[];
@@ -91,15 +92,15 @@ export default function DashboardScreen({ meals, announcements, upcomingExam, st
     const examDate = new Date(upcomingExam.examDate);
     const diff = examDate.getTime() - now.getTime();
     if (diff <= 0) return null;
-    
+
     const days = Math.floor(diff / (1000 * 60 * 60 * 24));
     const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    
-    return { 
-      label: upcomingExam.title, 
-      days, 
-      hours, 
-      type: upcomingExam.examType 
+
+    return {
+      label: upcomingExam.title,
+      days,
+      hours,
+      type: upcomingExam.examType
     };
   }, [now, upcomingExam]);
 
@@ -166,6 +167,12 @@ export default function DashboardScreen({ meals, announcements, upcomingExam, st
                   <span className="material-icons-round text-xl opacity-80">timer</span>
                   <span className="text-sm font-semibold opacity-90 uppercase tracking-wide">{examCountdown.label}</span>
                 </div>
+                {upcomingExam?.subject && (
+                  <div className="flex items-center gap-1.5 mb-3 -mt-1">
+                    <span className="material-icons-round text-sm opacity-70">menu_book</span>
+                    <span className="text-sm font-medium opacity-85">{upcomingExam.subject}</span>
+                  </div>
+                )}
                 <div className="flex items-end gap-4">
                   <div className="flex items-end gap-1">
                     <span className="text-5xl font-bold tabular-nums">{examCountdown.days}</span>
@@ -233,13 +240,12 @@ export default function DashboardScreen({ meals, announcements, upcomingExam, st
                   return (
                     <div
                       key={p.key}
-                      className={`flex flex-col items-center min-w-[3.5rem] py-2 px-1 rounded-xl transition-all ${
-                        isNext
+                      className={`flex flex-col items-center min-w-[3.5rem] py-2 px-1 rounded-xl transition-all ${isNext
                           ? "bg-primary text-white shadow-sm"
                           : isPast
                             ? "opacity-40"
                             : ""
-                      }`}
+                        }`}
                     >
                       <span className={`text-[10px] mb-0.5 ${isNext ? "opacity-80" : "text-gray-500 dark:text-gray-700"}`}>{p.label}</span>
                       <span className={`text-sm font-bold ${isNext ? "" : "text-gray-800 dark:text-gray-900"}`}>
@@ -265,22 +271,20 @@ export default function DashboardScreen({ meals, announcements, upcomingExam, st
             </div>
             <div className="space-y-2.5">
               {schedules && schedules.length > 0 ? (
-                schedules.map((schedule) => {
-                  // If it's currently happening, we can style it differently, but for now just list them
-                  const isNow = false; // Could check with now.getHours() and schedule time
+                schedules.map((schedule: any) => {
                   return (
-                    <div key={schedule.id} className={`flex items-center gap-3 p-3 rounded-xl border ${isNow ? 'bg-primary/5 border-primary/10' : 'bg-gray-50 border-transparent'}`}>
-                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${isNow ? 'bg-primary/10 text-primary' : 'bg-gray-100 text-gray-500 dark:text-gray-700'}`}>
+                    <div key={schedule.id} className="flex items-center gap-3 p-3 rounded-xl border bg-gray-50 border-transparent">
+                      <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-gray-100 text-gray-500 dark:text-gray-700">
                         <span className="font-bold text-sm">{schedule.period}</span>
                       </div>
                       <div className="flex-1">
                         <p className="text-sm font-semibold text-gray-800 dark:text-gray-900">{schedule.subject}</p>
                         <p className="text-xs text-gray-500 dark:text-gray-700">
-                          {schedule.startTime.slice(0, 5)} - {schedule.endTime.slice(0, 5)}
-                          {schedule.teacher && ` • ${schedule.teacher}`}
+                          {schedule.period}. Ders
+                          {schedule.teacherName && ` • ${schedule.teacherName}`}
+                          {schedule.room && ` • ${schedule.room}`}
                         </p>
                       </div>
-                      {isNow && <span className="material-icons-round text-primary/40 text-sm">circle</span>}
                     </div>
                   );
                 })
@@ -292,39 +296,41 @@ export default function DashboardScreen({ meals, announcements, upcomingExam, st
             </div>
           </section>
 
-          {/* Today's Study Sessions (Boarders only) */}
-          {user.isBoarder && (
-            <section className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 text-gray-800 dark:text-gray-900">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-base font-bold text-gray-800 dark:text-gray-900 flex items-center gap-2">
-                  <span className="material-icons-round text-amber-500 text-xl">menu_book</span>
-                  Bugünkü Etütler
-                </h2>
-              </div>
-              <div className="space-y-2.5">
-                {studySessions && studySessions.length > 0 ? (
-                  studySessions.map((session, index) => (
+          {/* Study Sessions (Etüt) */}
+          <section className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 text-gray-800 dark:text-gray-900">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-base font-bold text-gray-800 dark:text-gray-900 flex items-center gap-2">
+                <span className="material-icons-round text-amber-500 text-xl">menu_book</span>
+                Etüt Programı
+              </h2>
+            </div>
+            <div className="space-y-2.5">
+              {studySessions && studySessions.length > 0 ? (
+                studySessions.map((session: any, index: number) => {
+                  const dayNames = ["", "Pzt", "Sal", "Çar", "Per", "Cum", "Cmt", "Paz"];
+                  const dayName = dayNames[session.dayOfWeek] || "";
+                  return (
                     <div key={session.id} className="flex items-center gap-3 p-3 bg-amber-50/50 rounded-xl border border-amber-100 text-gray-800 dark:text-gray-900">
-                      <div className="w-10 h-10 rounded-lg bg-amber-100 flex items-center justify-center">
-                        <span className="text-amber-600 font-bold text-sm">{index + 1}</span>
+                      <div className="w-10 h-10 rounded-lg bg-amber-100 flex items-center justify-center flex-shrink-0">
+                        <span className="text-amber-700 font-bold text-[11px]">{dayName}</span>
                       </div>
                       <div className="flex-1">
                         <p className="text-sm font-semibold text-gray-800 dark:text-gray-900">{session.subject ?? "Bireysel Çalışma"}</p>
                         <p className="text-xs text-gray-500 dark:text-gray-700">
-                          {session.startTime.slice(0, 5)} - {session.endTime.slice(0, 5)} 
+                          {session.startTime?.slice(0, 5)} - {session.endTime?.slice(0, 5)}
                           {session.location && ` • ${session.location}`}
                         </p>
                       </div>
                     </div>
-                  ))
-                ) : (
-                  <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl text-center text-gray-800 dark:text-gray-900">
-                    <p className="text-sm text-gray-500 dark:text-gray-700 w-full">Bugün için planlanmış etüt yok.</p>
-                  </div>
-                )}
-              </div>
-            </section>
-          )}
+                  );
+                })
+              ) : (
+                <div className="p-4 bg-gray-50 rounded-xl text-center border border-gray-100 text-gray-800 dark:text-gray-900">
+                  <p className="text-sm text-gray-500 dark:text-gray-700">Henüz etüt programı eklenmedi.</p>
+                </div>
+              )}
+            </div>
+          </section>
 
           {/* Cafeteria Menu Card */}
           <section className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 text-gray-800 dark:text-gray-900">
@@ -379,7 +385,7 @@ export default function DashboardScreen({ meals, announcements, upcomingExam, st
                   <div key={ann.id} className="p-3 bg-blue-50/50 rounded-xl border border-blue-100/50 text-gray-800 dark:text-gray-900">
                     <div className="flex items-center gap-2 mb-1">
                       <span className="bg-blue-100 text-blue-700 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">
-                        {ann.targetAudience}
+                        {ann.category}
                       </span>
                       <span className="text-[10px] text-gray-400 dark:text-gray-600">
                         {new Date(ann.createdAt).toLocaleDateString("tr-TR")}
@@ -398,19 +404,7 @@ export default function DashboardScreen({ meals, announcements, upcomingExam, st
           </section>
 
           {/* Quick Actions */}
-          <section className="grid grid-cols-4 gap-3 pb-10">
-            <Link href="/ibadet" className="flex flex-col items-center gap-2 group">
-              <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center shadow-sm border border-gray-100 group-active:scale-95 transition-transform group-hover:border-primary/30 group-hover:shadow-md text-gray-800 dark:text-gray-900">
-                <span className="material-icons-round text-primary text-2xl">mosque</span>
-              </div>
-              <span className="text-xs font-semibold text-gray-500 dark:text-gray-700 text-center">Namaz</span>
-            </Link>
-            <Link href="/ibadet" className="flex flex-col items-center gap-2 group">
-              <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center shadow-sm border border-gray-100 group-active:scale-95 transition-transform group-hover:border-primary/30 group-hover:shadow-md text-gray-800 dark:text-gray-900">
-                <span className="material-icons-round text-primary text-2xl">menu_book</span>
-              </div>
-              <span className="text-xs font-semibold text-gray-500 dark:text-gray-700 text-center">Kur'an</span>
-            </Link>
+          <section className="grid grid-cols-2 gap-3 pb-10">
             <Link href="/takip" className="flex flex-col items-center gap-2 group">
               <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center shadow-sm border border-gray-100 group-active:scale-95 transition-transform group-hover:border-primary/30 group-hover:shadow-md text-gray-800 dark:text-gray-900">
                 <span className="material-icons-round text-indigo-500 text-2xl">quiz</span>

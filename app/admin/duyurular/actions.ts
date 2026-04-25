@@ -15,7 +15,7 @@ export async function addAnnouncement(formData: FormData) {
 
   const title = formData.get("title") as string;
   const content = formData.get("content") as string;
-  const category = formData.get("category") as "genel" | "pansiyon" | "sinav" | "etkinlik";
+  const category = formData.get("category") as "genel" | "pansiyon" | "evciler" | "sinav" | "etkinlik";
   const isPinned = formData.get("isPinned") === "on";
 
   if (!title || !content) {

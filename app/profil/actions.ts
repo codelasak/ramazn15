@@ -38,3 +38,28 @@ export async function updateGoals(formData: FormData) {
   revalidatePath("/profil");
   revalidatePath("/takip");
 }
+
+export async function updateProfile(formData: FormData) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.id) {
+    throw new Error("Giriş yapmanız gerekiyor.");
+  }
+
+  const name = (formData.get("name") as string)?.trim();
+  const isBoarder = formData.get("isBoarder") === "true";
+
+  if (!name) {
+    throw new Error("İsim boş olamaz.");
+  }
+
+  await db.update(users)
+    .set({
+      name,
+      isBoarder,
+      updatedAt: new Date(),
+    })
+    .where(eq(users.id, session.user.id));
+
+  revalidatePath("/profil");
+  revalidatePath("/");
+}

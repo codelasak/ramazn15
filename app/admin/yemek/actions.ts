@@ -17,6 +17,12 @@ export async function createMenu(formData: FormData) {
   const mealType = formData.get("mealType") as "kahvalti" | "ogle" | "aksam";
   const items = formData.get("items") as string;
 
+  // Bugünden önceki tarihleri reddet
+  const today = new Date().toISOString().split('T')[0];
+  if (date < today) {
+    throw new Error("Geçmiş tarihe yemek menüsü eklenemez.");
+  }
+
   await db.insert(mealMenus).values({
     date,
     mealType,

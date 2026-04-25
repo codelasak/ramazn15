@@ -6,6 +6,7 @@ import { addAnnouncement, deleteAnnouncement, updateAnnouncement } from "./actio
 const CATEGORY_LABELS: Record<string, { label: string; bg: string; text: string }> = {
   genel: { label: "Genel", bg: "bg-blue-100", text: "text-blue-700" },
   pansiyon: { label: "Pansiyon", bg: "bg-emerald-100", text: "text-emerald-700" },
+  evciler: { label: "Evciler", bg: "bg-cyan-100", text: "text-cyan-700" },
   sinav: { label: "Sınav", bg: "bg-purple-100", text: "text-purple-700" },
   etkinlik: { label: "Etkinlik", bg: "bg-amber-100", text: "text-amber-700" },
 };
@@ -45,6 +46,7 @@ export default async function AdminDuyurularPage() {
                 <select required name="category" className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50">
                   <option value="genel">Genel</option>
                   <option value="pansiyon">Pansiyon</option>
+                  <option value="evciler">Evciler</option>
                   <option value="sinav">Sınav</option>
                   <option value="etkinlik">Etkinlik</option>
                 </select>
@@ -133,6 +135,7 @@ export default async function AdminDuyurularPage() {
                                 <select name="category" defaultValue={a.category} required className="w-full px-2 py-1.5 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50">
                                   <option value="genel">Genel</option>
                                   <option value="pansiyon">Pansiyon</option>
+                                  <option value="evciler">Evciler</option>
                                   <option value="sinav">Sınav</option>
                                   <option value="etkinlik">Etkinlik</option>
                                 </select>
