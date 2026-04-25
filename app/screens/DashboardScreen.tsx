@@ -11,8 +11,8 @@ const DAY_NAMES = ["Pazar", "Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cu
 
 function formatTurkishDate(d: Date): string {
   const months = [
-    "Ocak","Şubat","Mart","Nisan","Mayıs","Haziran",
-    "Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık",
+    "Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran",
+    "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık",
   ];
   return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}, ${DAY_NAMES[d.getDay()]}`;
 }
@@ -91,15 +91,15 @@ export default function DashboardScreen({ meals, announcements, upcomingExam, st
     const examDate = new Date(upcomingExam.examDate);
     const diff = examDate.getTime() - now.getTime();
     if (diff <= 0) return null;
-    
+
     const days = Math.floor(diff / (1000 * 60 * 60 * 24));
     const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    
-    return { 
-      label: upcomingExam.title, 
-      days, 
-      hours, 
-      type: upcomingExam.examType 
+
+    return {
+      label: upcomingExam.title,
+      days,
+      hours,
+      type: upcomingExam.examType
     };
   }, [now, upcomingExam]);
 
@@ -233,13 +233,12 @@ export default function DashboardScreen({ meals, announcements, upcomingExam, st
                   return (
                     <div
                       key={p.key}
-                      className={`flex flex-col items-center min-w-[3.5rem] py-2 px-1 rounded-xl transition-all ${
-                        isNext
+                      className={`flex flex-col items-center min-w-[3.5rem] py-2 px-1 rounded-xl transition-all ${isNext
                           ? "bg-primary text-white shadow-sm"
                           : isPast
                             ? "opacity-40"
                             : ""
-                      }`}
+                        }`}
                     >
                       <span className={`text-[10px] mb-0.5 ${isNext ? "opacity-80" : "text-gray-500 dark:text-gray-700"}`}>{p.label}</span>
                       <span className={`text-sm font-bold ${isNext ? "" : "text-gray-800 dark:text-gray-900"}`}>
@@ -268,15 +267,26 @@ export default function DashboardScreen({ meals, announcements, upcomingExam, st
                 schedules.map((schedule: any) => {
                   return (
                     <div key={schedule.id} className="flex items-center gap-3 p-3 rounded-xl border bg-gray-50 border-transparent">
-                      <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-gray-100 text-gray-500 dark:text-gray-700">
+                      <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-gray-100 text-gray-500">
+                        <span className="font-bold text-sm">{schedule.period}</span>
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-sm font-semibold text-gray-800">{schedule.subject}</p>
+                        <p className="text-xs text-gray-500">
+                          {schedule.period}. Ders
+                          {schedule.teacherName && ` • ${schedule.teacherName}`}
+                          {schedule.room && ` • ${schedule.room}`}
+=========
+                    <div key={schedule.id} className={`flex items-center gap-3 p-3 rounded-xl border ${isNow ? 'bg-primary/5 border-primary/10' : 'bg-gray-50 border-transparent'}`}>
+                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${isNow ? 'bg-primary/10 text-primary' : 'bg-gray-100 text-gray-500 dark:text-gray-700'}`}>
                         <span className="font-bold text-sm">{schedule.period}</span>
                       </div>
                       <div className="flex-1">
                         <p className="text-sm font-semibold text-gray-800 dark:text-gray-900">{schedule.subject}</p>
                         <p className="text-xs text-gray-500 dark:text-gray-700">
-                          {schedule.period}. Ders
-                          {schedule.teacherName && ` • ${schedule.teacherName}`}
-                          {schedule.room && ` • ${schedule.room}`}
+                          {schedule.startTime.slice(0, 5)} - {schedule.endTime.slice(0, 5)}
+                          {schedule.teacher && ` • ${schedule.teacher}`}
+>>>>>>>>> Temporary merge branch 2
                         </p>
                       </div>
                     </div>
@@ -309,7 +319,7 @@ export default function DashboardScreen({ meals, announcements, upcomingExam, st
                       <div className="flex-1">
                         <p className="text-sm font-semibold text-gray-800 dark:text-gray-900">{session.subject ?? "Bireysel Çalışma"}</p>
                         <p className="text-xs text-gray-500 dark:text-gray-700">
-                          {session.startTime.slice(0, 5)} - {session.endTime.slice(0, 5)} 
+                          {session.startTime.slice(0, 5)} - {session.endTime.slice(0, 5)}
                           {session.location && ` • ${session.location}`}
                         </p>
                       </div>

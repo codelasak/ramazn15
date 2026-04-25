@@ -55,7 +55,7 @@ export default function ProfileScreen({ dbUser }: { dbUser: any }) {
   return (
     <div className="relative min-h-dvh">
       {/* Background */}
-      <div className="absolute top-0 left-0 right-0 h-56 bg-gradient-to-br from-primary to-primary-dark dark:from-black/40 dark:to-black/10 dark:border-b dark:border-white/5 rounded-b-[2.5rem] shadow-sm" />
+      <div className="absolute top-0 left-0 right-0 h-56 bg-linear-to-br from-primary to-primary-dark dark:from-black/40 dark:to-black/10 dark:border-b dark:border-white/5 rounded-b-[2.5rem] shadow-sm" />
       <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/4 translate-x-1/4" />
       <div className="absolute top-20 left-10 w-32 h-32 bg-mint-soft/10 rounded-full blur-2xl" />
 
@@ -67,10 +67,10 @@ export default function ProfileScreen({ dbUser }: { dbUser: any }) {
           <h1 className="text-xl font-bold text-white mt-4">{user.name}</h1>
           <p className="text-white/70 text-sm mt-0.5">{user.email}</p>
           <div className="flex items-center justify-center gap-2 mt-3">
-            <span className="bg-gray-100 text-gray-800 dark:text-gray-900 dark:bg-gray-800 dark:text-gray-100 text-xs font-bold px-3 py-1.5 rounded-full shadow-sm">
+            <span className="bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-100 text-xs font-bold px-3 py-1.5 rounded-full shadow-sm">
               {user.className ?? "—"}
             </span>
-            <span className="bg-gray-100 text-gray-800 dark:text-gray-900 dark:bg-gray-800 dark:text-gray-100 text-xs font-bold px-3 py-1.5 rounded-full shadow-sm">
+            <span className="bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-100 text-xs font-bold px-3 py-1.5 rounded-full shadow-sm">
               {user.isBoarder ? "🏠 Yurtlu" : "🚌 Evci"}
             </span>
           </div>
@@ -210,6 +210,14 @@ export default function ProfileScreen({ dbUser }: { dbUser: any }) {
                 Admin Paneli
               </button>
             )}
+
+            <button
+              onClick={() => router.push("/developers")}
+              className="w-full bg-emerald-500 hover:bg-emerald-600 text-white py-3.5 rounded-xl font-semibold text-sm shadow-lg shadow-emerald-500/20 transition-all flex items-center justify-center gap-2"
+            >
+              <span className="material-icons-round text-lg">groups</span>
+              Geliştirici Ekibi
+            </button>
 
             {/* Sign Out */}
             <button
