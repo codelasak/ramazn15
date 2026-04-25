@@ -267,18 +267,7 @@ export default function DashboardScreen({ meals, announcements, upcomingExam, st
                 schedules.map((schedule: any) => {
                   return (
                     <div key={schedule.id} className="flex items-center gap-3 p-3 rounded-xl border bg-gray-50 border-transparent">
-                      <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-gray-100 text-gray-500">
-                        <span className="font-bold text-sm">{schedule.period}</span>
-                      </div>
-                      <div className="flex-1">
-                        <p className="text-sm font-semibold text-gray-800">{schedule.subject}</p>
-                        <p className="text-xs text-gray-500">
-                          {schedule.period}. Ders
-                          {schedule.teacherName && ` • ${schedule.teacherName}`}
-                          {schedule.room && ` • ${schedule.room}`}
-=========
-                    <div key={schedule.id} className={`flex items-center gap-3 p-3 rounded-xl border ${isNow ? 'bg-primary/5 border-primary/10' : 'bg-gray-50 border-transparent'}`}>
-                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${isNow ? 'bg-primary/10 text-primary' : 'bg-gray-100 text-gray-500 dark:text-gray-700'}`}>
+                      <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-gray-100 text-gray-500 dark:text-gray-700">
                         <span className="font-bold text-sm">{schedule.period}</span>
                       </div>
                       <div className="flex-1">
@@ -286,7 +275,6 @@ export default function DashboardScreen({ meals, announcements, upcomingExam, st
                         <p className="text-xs text-gray-500 dark:text-gray-700">
                           {schedule.startTime.slice(0, 5)} - {schedule.endTime.slice(0, 5)}
                           {schedule.teacher && ` • ${schedule.teacher}`}
->>>>>>>>> Temporary merge branch 2
                         </p>
                       </div>
                     </div>
