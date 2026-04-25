@@ -54,33 +54,57 @@ async function getPreferences(): Promise<PreferencesPlugin | null> {
 }
 
 async function readKey(key: string): Promise<string | null> {
-  const prefs = await getPreferences();
-  if (prefs) {
-    const { value } = await prefs.get({ key });
-    return value;
+  try {
+    const prefs = await getPreferences();
+    if (prefs) {
+      const { value } = await prefs.get({ key });
+      return value;
+    }
+  } catch (err) {
+    console.warn("[auth-storage] Preferences.get failed, falling back to localStorage", err);
   }
   if (typeof window === "undefined") return null;
-  return window.localStorage.getItem(key);
+  try {
+    return window.localStorage.getItem(key);
+  } catch {
+    return null;
+  }
 }
 
 async function writeKey(key: string, value: string): Promise<void> {
-  const prefs = await getPreferences();
-  if (prefs) {
-    await prefs.set({ key, value });
-    return;
+  try {
+    const prefs = await getPreferences();
+    if (prefs) {
+      await prefs.set({ key, value });
+      return;
+    }
+  } catch (err) {
+    console.warn("[auth-storage] Preferences.set failed, falling back to localStorage", err);
   }
   if (typeof window === "undefined") return;
-  window.localStorage.setItem(key, value);
+  try {
+    window.localStorage.setItem(key, value);
+  } catch {
+    // ignore
+  }
 }
 
 async function removeKey(key: string): Promise<void> {
-  const prefs = await getPreferences();
-  if (prefs) {
-    await prefs.remove({ key });
-    return;
+  try {
+    const prefs = await getPreferences();
+    if (prefs) {
+      await prefs.remove({ key });
+      return;
+    }
+  } catch (err) {
+    console.warn("[auth-storage] Preferences.remove failed, falling back to localStorage", err);
   }
   if (typeof window === "undefined") return;
-  window.localStorage.removeItem(key);
+  try {
+    window.localStorage.removeItem(key);
+  } catch {
+    // ignore
+  }
 }
 
 export async function getAccessToken(): Promise<string | null> {

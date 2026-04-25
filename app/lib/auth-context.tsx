@@ -72,15 +72,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      const stored = await getStoredUser();
-      if (cancelled) return;
-      if (stored) {
-        setUser(stored);
-        setStatus("authenticated");
-        // Arkada user'i tazele.
-        refreshUser().catch(() => {});
-      } else {
-        setStatus("unauthenticated");
+      try {
+        // Storage cagrilari herhangi bir nedenle takilirsa 3sn icinde
+        // unauthenticated state'e dus, kullaniciyi giris ekranina at.
+        const timeoutPromise = new Promise<null>((resolve) =>
+          setTimeout(() => resolve(null), 3000)
+        );
+        const stored = await Promise.race([getStoredUser(), timeoutPromise]);
+        if (cancelled) return;
+        if (stored) {
+          setUser(stored);
+          setStatus("authenticated");
+          refreshUser().catch(() => {});
+        } else {
+          setStatus("unauthenticated");
+        }
+      } catch (err) {
+        if (!cancelled) {
+          console.error("[auth-context] init failed", err);
+          setStatus("unauthenticated");
+        }
       }
     })();
     return () => {
