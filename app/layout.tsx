@@ -9,9 +9,14 @@ const lexend = Lexend({
   weight: ["300", "400", "500", "600", "700"],
 });
 
+const isMobile = process.env.BUILD_TARGET === "mobile";
+
 export const metadata: Metadata = {
-  title: "15 Temmuz AİHL",
-  description: "Bahçelievler 15 Temmuz Şehitleri AİHL Öğrenci Uygulaması — Geleceğe Adım At",
+  title: isMobile ? "Pano15" : "15 Temmuz AİHL",
+  description: isMobile
+    ? "Pano15 — Okulun cebinde"
+    : "Bahçelievler 15 Temmuz Şehitleri AİHL Öğrenci Uygulaması — Geleceğe Adım At",
+  applicationName: isMobile ? "Pano15" : undefined,
 };
 
 export const viewport: Viewport = {

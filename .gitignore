@@ -32,6 +32,7 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.mobile.example
 
 # vercel
 .vercel
@@ -40,3 +41,19 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 .env
+
+# Capacitor / mobile build
+/.mobile-staging
+/ios/App/Pods
+/ios/App/build
+/ios/DerivedData
+/android/.gradle
+/android/.idea
+/android/build
+/android/app/build
+/android/local.properties
+/android/captured-screenshots
+*.keystore
+*.jks
+!debug.keystore
+
