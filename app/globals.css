@@ -1,14 +1,39 @@
 @import "tailwindcss";
 
 @custom-variant dark (&:where(.dark, .dark *));
+
+/* LIGHT MODE (Coolors Red Palette - Default/System) */
 :root {
-  --background: #F5F9F5;
-  --foreground: #1f2937;
+  --background: #f5f3f4; /* Anti-flash white */
+  --foreground: #0b090a; /* Rich black */
+  
+  --primary: #ba181b;       /* Engineering orange/red */
+  --primary-light: #e5383b; /* Imperial red */
+  --primary-dark: #a4161a;  /* Rosso corsa */
+  --accent: #660708;        /* Blood red */
+  
+  --mint-soft: #ffffff;     /* White for cards */
+  --sage: #b1a7a6;          /* Silver pink / muted gray */
+  --warm-cream: #ffffff;    /* Pure white */
+  --bg-light: #f5f3f4;
+  --bg-dark: #161a1d;       /* Eerie black */
 }
 
+/* DARK MODE (Original Green Palette) */
 .dark {
-  --background: #1A2F23;
-  --foreground: #f3f4f6;
+  --background: #1A2F23; /* Dark green background */
+  --foreground: #f3f4f6; /* Light text */
+  
+  --primary: #4C8C64;       /* Sage green */
+  --primary-light: #8FCB9B; /* Light green */
+  --primary-dark: #2E593F;  /* Dark green */
+  --accent: #C1E1C1;        /* Accent green */
+  
+  --mint-soft: #1e3a29;     /* Darker soft green for dark mode cards */
+  --sage: #74A57F;          /* Sage */
+  --warm-cream: #1A2F23;    /* Dark mode surface */
+  --bg-light: #2E593F;      /* Secondary dark surface */
+  --bg-dark: #0f1c14;       /* Deepest green */
 }
 
 @theme inline {
@@ -16,20 +41,19 @@
   --color-foreground: var(--foreground);
   --font-display: var(--font-lexend), "Lexend", sans-serif;
 
-  /* Primary sage green palette */
-  --color-primary: #4C8C64;
-  --color-primary-light: #8FCB9B;
-  --color-primary-dark: #2E593F;
-  --color-accent: #C1E1C1;
-  --color-mint-soft: #E8F5E9;
-  --color-sage: #74A57F;
-  --color-warm-cream: #FDFFF5;
-  --color-bg-light: #F5F9F5;
-  --color-bg-dark: #1A2F23;
+  /* Map Tailwind colors to the dynamic CSS variables */
+  --color-primary: var(--primary);
+  --color-primary-light: var(--primary-light);
+  --color-primary-dark: var(--primary-dark);
+  --color-accent: var(--accent);
+  --color-mint-soft: var(--mint-soft);
+  --color-sage: var(--sage);
+  --color-warm-cream: var(--warm-cream);
+  --color-bg-light: var(--bg-light);
+  --color-bg-dark: var(--bg-dark);
 }
 
 /* Base configuration */
-
 body {
   background: var(--background);
   color: var(--foreground);
@@ -72,15 +96,15 @@ body {
 
 /* === Utility classes === */
 .lantern-glow {
-  background: radial-gradient(circle at 75% 15%, rgba(143, 203, 155, 0.5) 0%, rgba(76, 140, 100, 0.15) 40%, transparent 70%);
+  background: radial-gradient(circle at 75% 15%, color-mix(in srgb, var(--primary-light) 50%, transparent) 0%, color-mix(in srgb, var(--primary) 15%, transparent) 40%, transparent 70%);
 }
 
 .card-shadow {
-  box-shadow: 0 4px 20px -2px rgba(76, 140, 100, 0.08);
+  box-shadow: 0 4px 20px -2px color-mix(in srgb, var(--primary) 8%, transparent);
 }
 
 .shadow-soft {
-  box-shadow: 0 4px 20px -2px rgba(21, 128, 61, 0.15);
+  box-shadow: 0 4px 20px -2px color-mix(in srgb, var(--primary-dark) 15%, transparent);
 }
 
 .no-scrollbar::-webkit-scrollbar {
@@ -92,17 +116,18 @@ body {
 }
 
 .bg-islamic-pattern {
-  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%234C8C64' fill-opacity='0.05' fill-rule='evenodd'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='currentColor' fill-opacity='0.05' fill-rule='evenodd'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/svg%3E");
+  color: var(--primary); /* Use currentColor in SVG to inherit this */
 }
 
 .bg-dot-pattern {
-  background-image: radial-gradient(#4C8C64 0.5px, transparent 0.5px);
+  background-image: radial-gradient(var(--sage) 0.5px, transparent 0.5px);
   background-size: 20px 20px;
   opacity: 0.15;
 }
 
 .gauge-fill {
-  background: conic-gradient(from 180deg at 50% 100%, #4C8C64 0deg, #4C8C64 130deg, transparent 130deg);
+  background: conic-gradient(from 180deg at 50% 100%, var(--primary) 0deg, var(--primary) 130deg, transparent 130deg);
   border-top-left-radius: 9999px;
   border-top-right-radius: 9999px;
   mask-image: radial-gradient(circle at 50% 100%, transparent 60%, black 61%);

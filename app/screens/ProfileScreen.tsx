@@ -277,14 +277,14 @@ export default function ProfileScreen({ dbUser }: { dbUser: any }) {
                 className={`py-2 px-3 rounded-xl text-sm font-bold flex flex-col items-center gap-2 transition-all border ${theme === 'light' ? 'bg-primary/10 text-primary border-primary/20' : 'bg-gray-50 text-gray-500 dark:text-gray-700 border-transparent hover:bg-gray-100'}`}
               >
                 <span className="material-icons-round">light_mode</span>
-                Açık
+                Açık (Kırmızı)
               </button>
               <button
                 onClick={() => setTheme("dark")}
                 className={`py-2 px-3 rounded-xl text-sm font-bold flex flex-col items-center gap-2 transition-all border ${theme === 'dark' ? 'bg-primary/10 text-primary border-primary/20' : 'bg-gray-50 text-gray-500 dark:text-gray-700 border-transparent hover:bg-gray-100'}`}
               >
                 <span className="material-icons-round">dark_mode</span>
-                Koyu
+                Koyu (Yeşil)
               </button>
               <button
                 onClick={() => setTheme("system")}
