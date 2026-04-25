@@ -1,9 +1,32 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { addMockExamResult, deleteMockExamResult } from "./actions";
+import { apiJson, ApiError } from "../lib/api-client";
 
-export default function TakipClient({ results }: { results: any[] }) {
+type ExamRow = {
+  id: string;
+  examName: string;
+  examType: string;
+  examDate: string | Date;
+  totalNet: string | number;
+  netScore?: string | number;
+  turkishCorrect: number;
+  turkishWrong: number;
+  mathCorrect: number;
+  mathWrong: number;
+  socialCorrect: number;
+  socialWrong: number;
+  scienceCorrect: number;
+  scienceWrong: number;
+  createdAt: string | Date;
+};
+
+interface TakipClientProps {
+  results: ExamRow[];
+  onReload?: () => Promise<void> | void;
+}
+
+export default function TakipClient({ results, onReload }: TakipClientProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedExamType, setSelectedExamType] = useState("TYT");
@@ -36,21 +59,37 @@ export default function TakipClient({ results }: { results: any[] }) {
     setErrorMessage("");
     setIsSubmitting(true);
     const formData = new FormData(e.currentTarget);
-    const res = await addMockExamResult(formData);
-    setIsSubmitting(false);
-    
-    if (res && !res.success) {
-      setErrorMessage(res.error || "Sınav eklenirken bir hata oluştu.");
-      return;
+    const payload: Record<string, unknown> = {};
+    for (const [key, value] of formData.entries()) {
+      payload[key] = value;
     }
-    
-    setIsModalOpen(false);
+
+    try {
+      await apiJson("/api/v1/mock-exams", {
+        method: "POST",
+        body: JSON.stringify(payload),
+      });
+      setIsModalOpen(false);
+      if (onReload) await onReload();
+    } catch (err) {
+      if (err instanceof ApiError) {
+        setErrorMessage(err.message || "Sinav eklenirken bir hata olustu.");
+      } else {
+        setErrorMessage("Sinav eklenirken bir hata olustu.");
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   async function handleDelete(id: string, e: React.MouseEvent) {
     e.stopPropagation();
-    const res = await deleteMockExamResult(id);
-    // Explicitly ignoring failure alert as per instruction "asla alert kullanma"
+    try {
+      await apiJson(`/api/v1/mock-exams/${id}`, { method: "DELETE" });
+      if (onReload) await onReload();
+    } catch {
+      // sessizce gec; UI guncellemesi reload'la
+    }
     setDeleteConfirmId(null);
   }
 

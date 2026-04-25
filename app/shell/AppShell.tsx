@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useSession } from "next-auth/react";
 import type { ReactNode } from "react";
+import { useAuth } from "../lib/auth-context";
 
 type NavItem = {
   href: string;
@@ -21,7 +21,7 @@ const NAV_ITEMS: NavItem[] = [
 
 export default function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
-  const { status } = useSession();
+  const { status } = useAuth();
 
   // Don't show shell on auth pages or when not authenticated
   const isAuthPage = pathname === "/giris" || pathname === "/kayit";

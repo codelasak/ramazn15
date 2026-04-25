@@ -87,6 +87,8 @@ export async function POST(req: Request) {
           department: created.department,
           isBoarder: created.isBoarder,
           profileImageUrl: created.profileImageUrl,
+          targetUniversity: created.targetUniversity,
+          targetNet: created.targetNet,
         },
       },
       { status: 201 }

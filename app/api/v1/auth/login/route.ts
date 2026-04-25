@@ -65,6 +65,8 @@ export async function POST(req: Request) {
         department: user.department,
         isBoarder: user.isBoarder,
         profileImageUrl: user.profileImageUrl,
+        targetUniversity: user.targetUniversity,
+        targetNet: user.targetNet,
       },
     });
   } catch (err) {

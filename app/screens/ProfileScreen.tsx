@@ -1,10 +1,11 @@
 "use client";
 
-import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState, useTransition } from "react";
-import { updateGoals, updateProfile } from "../profil/actions";
+import { useState, useTransition } from "react";
 import { useTheme } from "next-themes";
+import { useAuth } from "../lib/auth-context";
+import { apiJson, ApiError } from "../lib/api-client";
+import { isNativePlatform } from "../lib/platform";
 
 const DEPARTMENT_LABELS: Record<string, string> = {
   teknoloji_fen: "Teknoloji ve Fen Bilimleri",
@@ -12,29 +13,17 @@ const DEPARTMENT_LABELS: Record<string, string> = {
   hazirlik: "Hazırlık",
 };
 
-export default function ProfileScreen({ dbUser }: { dbUser: any }) {
-  const { data: session, status, update: updateSession } = useSession();
+export default function ProfileScreen() {
+  const { user, logout, refreshUser } = useAuth();
   const router = useRouter();
-  
+
   const [isPending, startTransition] = useTransition();
   const [goalSaved, setGoalSaved] = useState(false);
   const [profileSaved, setProfileSaved] = useState(false);
   const { theme, setTheme } = useTheme();
 
-  useEffect(() => {
-    if (status === "unauthenticated") router.push("/giris");
-  }, [status, router]);
-
-  if (status === "loading" || !dbUser) {
-    return (
-      <div className="min-h-dvh flex items-center justify-center">
-        <div className="w-10 h-10 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
-      </div>
-    );
-  }
-
-  const user = session?.user;
   if (!user) return null;
+  const dbUser = user;
 
   const initial = user.name?.[0]?.toUpperCase() ?? "Ö";
   const deptLabel = user.department ? DEPARTMENT_LABELS[user.department] ?? user.department : "Belirtilmedi";
@@ -42,9 +31,18 @@ export default function ProfileScreen({ dbUser }: { dbUser: any }) {
   const handleGoalSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
+    const targetUniversity = (formData.get("targetUniversity") as string | null)?.trim() ?? "";
+    const targetNetRaw = (formData.get("targetNet") as string | null) ?? "";
     startTransition(async () => {
       try {
-        await updateGoals(formData);
+        await apiJson("/api/v1/auth/me", {
+          method: "PATCH",
+          body: JSON.stringify({
+            targetUniversity: targetUniversity || null,
+            targetNet: targetNetRaw === "" ? null : targetNetRaw,
+          }),
+        });
+        await refreshUser();
         setGoalSaved(true);
         setTimeout(() => setGoalSaved(false), 3000);
       } catch (err) {
@@ -56,16 +54,39 @@ export default function ProfileScreen({ dbUser }: { dbUser: any }) {
   const handleProfileSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
+    const name = (formData.get("name") as string)?.trim();
+    const isBoarder = formData.get("isBoarder") === "true";
+    if (!name) return;
     startTransition(async () => {
       try {
-        await updateProfile(formData);
+        await apiJson("/api/v1/auth/me", {
+          method: "PATCH",
+          body: JSON.stringify({ name, isBoarder }),
+        });
+        await refreshUser();
         setProfileSaved(true);
         setTimeout(() => setProfileSaved(false), 3000);
-        router.refresh();
       } catch (err) {
-        console.error(err);
+        if (err instanceof ApiError) {
+          console.error("profile update error:", err.message);
+        } else {
+          console.error(err);
+        }
       }
     });
+  };
+
+  const handleLogout = async () => {
+    await logout();
+    if (!isNativePlatform()) {
+      try {
+        const { signOut } = await import("next-auth/react");
+        await signOut({ redirect: false });
+      } catch {
+        // ignore
+      }
+    }
+    router.push("/giris");
   };
 
   return (
@@ -318,7 +339,7 @@ export default function ProfileScreen({ dbUser }: { dbUser: any }) {
 
             {/* Sign Out */}
             <button
-              onClick={() => signOut({ callbackUrl: "/giris" })}
+              onClick={handleLogout}
               className="w-full bg-red-50 hover:bg-red-100 text-red-600 py-3.5 rounded-xl font-semibold text-sm border border-red-100 transition-all flex items-center justify-center gap-2"
             >
               <span className="material-icons-round text-lg">logout</span>

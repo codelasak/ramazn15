@@ -1,24 +1,34 @@
+"use client";
+
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import AppShell from "../shell/AppShell";
 import ProfileScreen from "../screens/ProfileScreen";
-import { getServerSession } from "next-auth";
-import { authOptions } from "../lib/auth";
-import { redirect } from "next/navigation";
-import { db } from "../lib/db";
-import { users } from "../lib/schema";
-import { eq } from "drizzle-orm";
+import { useAuth } from "../lib/auth-context";
 
-export default async function ProfilPage() {
-  const session = await getServerSession(authOptions);
-  if (!session?.user) {
-    redirect("/giris");
+export default function ProfilPage() {
+  const { status } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.replace("/giris");
+    }
+  }, [status, router]);
+
+  if (status !== "authenticated") {
+    return (
+      <AppShell>
+        <div className="min-h-dvh flex items-center justify-center">
+          <div className="w-10 h-10 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
+        </div>
+      </AppShell>
+    );
   }
-
-  // Use the ID from session to get the full profile from DB
-  const [dbUser] = await db.select().from(users).where(eq(users.id, session.user.id));
 
   return (
     <AppShell>
-      <ProfileScreen dbUser={dbUser} />
+      <ProfileScreen />
     </AppShell>
   );
 }

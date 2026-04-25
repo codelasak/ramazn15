@@ -1,28 +1,82 @@
+"use client";
+
+import { useCallback, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import AppShell from "../shell/AppShell";
-import { getServerSession } from "next-auth";
-import { authOptions } from "../lib/auth";
-import { redirect } from "next/navigation";
-import { db } from "../lib/db";
-import { mockExamResults } from "../lib/schema";
-import { desc, asc, eq } from "drizzle-orm";
 import TakipClient from "./TakipClient";
+import { useAuth } from "../lib/auth-context";
+import { apiJson, ApiError } from "../lib/api-client";
 
-export default async function TakipPage() {
-  const session = await getServerSession(authOptions);
-  if (!session?.user) {
-    redirect("/giris");
-  }
+interface MockExamRow {
+  id: string;
+  examName: string;
+  examType: string;
+  examDate: string;
+  totalNet: string | number;
+  turkishCorrect: number;
+  turkishWrong: number;
+  mathCorrect: number;
+  mathWrong: number;
+  socialCorrect: number;
+  socialWrong: number;
+  scienceCorrect: number;
+  scienceWrong: number;
+  createdAt: string;
+}
 
-  // DB migration henüz uygulanmamışsa sayfayı patlatmak yerine boş listeyle devam et.
-  let results: typeof mockExamResults.$inferSelect[] = [];
-  try {
-    results = await db
-      .select()
-      .from(mockExamResults)
-      .where(eq(mockExamResults.userId, session.user.id))
-      .orderBy(asc(mockExamResults.examDate), asc(mockExamResults.createdAt));
-  } catch (error) {
-    console.error("Failed to load mock exam results", error);
+export default function TakipPage() {
+  const { status } = useAuth();
+  const router = useRouter();
+  const [results, setResults] = useState<MockExamRow[] | null>(null);
+
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.replace("/giris");
+    }
+  }, [status, router]);
+
+  const reload = useCallback(async () => {
+    try {
+      const data = await apiJson<{ results: MockExamRow[] }>("/api/v1/mock-exams");
+      setResults(data.results);
+    } catch (err) {
+      if (err instanceof ApiError && err.status === 401) {
+        router.replace("/giris");
+        return;
+      }
+      setResults([]);
+    }
+  }, [router]);
+
+  useEffect(() => {
+    if (status !== "authenticated") return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const data = await apiJson<{ results: MockExamRow[] }>("/api/v1/mock-exams");
+        if (!cancelled) setResults(data.results);
+      } catch (err) {
+        if (cancelled) return;
+        if (err instanceof ApiError && err.status === 401) {
+          router.replace("/giris");
+          return;
+        }
+        setResults([]);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [status, router]);
+
+  if (status !== "authenticated" || results === null) {
+    return (
+      <AppShell>
+        <div className="min-h-dvh flex items-center justify-center">
+          <div className="w-10 h-10 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
+        </div>
+      </AppShell>
+    );
   }
 
   return (
@@ -40,7 +94,7 @@ export default async function TakipPage() {
           </div>
         </header>
         <main className="px-6 py-6 pb-24 space-y-6">
-          <TakipClient results={results} />
+          <TakipClient results={results} onReload={reload} />
         </main>
       </div>
     </AppShell>

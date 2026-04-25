@@ -19,6 +19,8 @@ export type ApiUser = {
   department: "teknoloji_fen" | "fen_sosyal" | "hazirlik" | null;
   isBoarder: boolean;
   profileImageUrl: string | null;
+  targetUniversity: string | null;
+  targetNet: string | null;
 };
 
 export class ApiAuthError extends Error {
@@ -68,6 +70,8 @@ export async function requireUser(req: Request): Promise<ApiUser> {
     department: dbUser.department,
     isBoarder: dbUser.isBoarder,
     profileImageUrl: dbUser.profileImageUrl,
+    targetUniversity: dbUser.targetUniversity,
+    targetNet: dbUser.targetNet,
   };
 }
 

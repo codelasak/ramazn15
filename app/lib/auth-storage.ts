@@ -22,6 +22,8 @@ type AuthUser = {
   department: "teknoloji_fen" | "fen_sosyal" | "hazirlik" | null;
   isBoarder: boolean;
   profileImageUrl: string | null;
+  targetUniversity: string | null;
+  targetNet: string | null;
 };
 
 interface PreferencesPlugin {
