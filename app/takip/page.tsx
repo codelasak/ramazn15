@@ -4,7 +4,7 @@ import { authOptions } from "../lib/auth";
 import { redirect } from "next/navigation";
 import { db } from "../lib/db";
 import { mockExamResults } from "../lib/schema";
-import { desc, eq } from "drizzle-orm";
+import { desc, asc, eq } from "drizzle-orm";
 import TakipClient from "./TakipClient";
 
 export default async function TakipPage() {
@@ -20,7 +20,7 @@ export default async function TakipPage() {
       .select()
       .from(mockExamResults)
       .where(eq(mockExamResults.userId, session.user.id))
-      .orderBy(desc(mockExamResults.examDate));
+      .orderBy(asc(mockExamResults.examDate), asc(mockExamResults.createdAt));
   } catch (error) {
     console.error("Failed to load mock exam results", error);
   }
