@@ -70,7 +70,7 @@ export default async function AdminDashboardPage() {
 
 function StatCard({ title, value, icon, color, bg, href }: { title: string; value: string; icon: string; color: string; bg: string; href?: string }) {
   const content = (
-    <div className="group bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex items-center gap-4 text-gray-800 dark:text-gray-900">
+    <div className={`bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex items-center gap-4 text-gray-800 dark:text-gray-900 group ${href ? "hover:border-primary/50 transition-colors" : ""}`}>
       <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${bg} ${color}`}>
         <span className="material-icons-round">{icon}</span>
       </div>
