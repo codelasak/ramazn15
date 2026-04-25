@@ -40,6 +40,7 @@ interface DashboardScreenProps {
     title: string;
     examDate: string;
     examType: string;
+    subject?: string | null;
   } | null;
   studySessions?: any[];
   schedules?: any[];
@@ -166,6 +167,12 @@ export default function DashboardScreen({ meals, announcements, upcomingExam, st
                   <span className="material-icons-round text-xl opacity-80">timer</span>
                   <span className="text-sm font-semibold opacity-90 uppercase tracking-wide">{examCountdown.label}</span>
                 </div>
+                {upcomingExam?.subject && (
+                  <div className="flex items-center gap-1.5 mb-3 -mt-1">
+                    <span className="material-icons-round text-sm opacity-70">menu_book</span>
+                    <span className="text-sm font-medium opacity-85">{upcomingExam.subject}</span>
+                  </div>
+                )}
                 <div className="flex items-end gap-4">
                   <div className="flex items-end gap-1">
                     <span className="text-5xl font-bold tabular-nums">{examCountdown.days}</span>
@@ -378,7 +385,7 @@ export default function DashboardScreen({ meals, announcements, upcomingExam, st
                   <div key={ann.id} className="p-3 bg-blue-50/50 rounded-xl border border-blue-100/50 text-gray-800 dark:text-gray-900">
                     <div className="flex items-center gap-2 mb-1">
                       <span className="bg-blue-100 text-blue-700 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">
-                        {ann.targetAudience}
+                        {ann.category}
                       </span>
                       <span className="text-[10px] text-gray-400 dark:text-gray-600">
                         {new Date(ann.createdAt).toLocaleDateString("tr-TR")}
