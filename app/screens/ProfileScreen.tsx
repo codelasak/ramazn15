@@ -7,6 +7,8 @@ import { useAuth } from "../lib/auth-context";
 import { apiJson, ApiError } from "../lib/api-client";
 import { isNativePlatform } from "../lib/platform";
 
+const DELETE_CONFIRM_PHRASE = "SİL";
+
 const DEPARTMENT_LABELS: Record<string, string> = {
   teknoloji_fen: "Teknoloji ve Fen Bilimleri",
   fen_sosyal: "Fen Bilimleri ve Sosyal Bilimler",
@@ -14,12 +16,16 @@ const DEPARTMENT_LABELS: Record<string, string> = {
 };
 
 export default function ProfileScreen() {
-  const { user, logout, refreshUser } = useAuth();
+  const { user, logout, deleteAccount, refreshUser } = useAuth();
   const router = useRouter();
 
   const [isPending, startTransition] = useTransition();
   const [goalSaved, setGoalSaved] = useState(false);
   const [profileSaved, setProfileSaved] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [deleteConfirmText, setDeleteConfirmText] = useState("");
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
   const { theme, setTheme } = useTheme();
 
   if (!user) return null;
@@ -87,6 +93,34 @@ export default function ProfileScreen() {
       }
     }
     router.push("/giris");
+  };
+
+  const handleDeleteAccount = async () => {
+    if (deleteConfirmText.trim() !== DELETE_CONFIRM_PHRASE) {
+      setDeleteError(`Onaylamak için "${DELETE_CONFIRM_PHRASE}" yazın.`);
+      return;
+    }
+    setDeleting(true);
+    setDeleteError(null);
+    try {
+      await deleteAccount();
+      if (!isNativePlatform()) {
+        try {
+          const { signOut } = await import("next-auth/react");
+          await signOut({ redirect: false });
+        } catch {
+          // ignore
+        }
+      }
+      router.push("/giris");
+    } catch (err) {
+      setDeleting(false);
+      setDeleteError(
+        err instanceof ApiError
+          ? `Hesap silinemedi: ${err.message}`
+          : "Hesap silinemedi. Lütfen tekrar deneyin."
+      );
+    }
   };
 
   return (
@@ -345,7 +379,85 @@ export default function ProfileScreen() {
               <span className="material-icons-round text-lg">logout</span>
               Çıkış Yap
             </button>
+
+            {/* Delete Account — Apple Guideline 5.1.1(v) */}
+            <button
+              onClick={() => {
+                setShowDeleteDialog(true);
+                setDeleteConfirmText("");
+                setDeleteError(null);
+              }}
+              className="w-full bg-white hover:bg-red-50 text-red-700 py-3 rounded-xl font-semibold text-sm border border-red-200 transition-all flex items-center justify-center gap-2"
+            >
+              <span className="material-icons-round text-lg">delete_forever</span>
+              Hesabımı Sil
+            </button>
           </div>
+
+          {showDeleteDialog && (
+            <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+              <div className="w-full max-w-sm bg-white rounded-3xl p-6 shadow-2xl text-gray-800">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-12 h-12 rounded-2xl bg-red-50 flex items-center justify-center">
+                    <span className="material-icons-round text-red-600 text-2xl">delete_forever</span>
+                  </div>
+                  <h3 className="text-lg font-bold text-gray-900">Hesabımı Sil</h3>
+                </div>
+                <p className="text-sm text-gray-600 mb-2">
+                  Bu işlem <strong>geri alınamaz</strong>. Hesabınız ve bağlı tüm verileriniz
+                  kalıcı olarak silinecek:
+                </p>
+                <ul className="text-xs text-gray-500 list-disc list-inside space-y-0.5 mb-4">
+                  <li>Profil bilgileri (ad, sınıf, alan, hedefler)</li>
+                  <li>Deneme sınavı sonuçları ve net analizleri</li>
+                  <li>Yatılılık ve konum tercihleri</li>
+                </ul>
+                <label className="block text-xs font-semibold text-gray-700 mb-1.5">
+                  Onaylamak için <span className="font-mono bg-red-50 text-red-700 px-1.5 py-0.5 rounded">{DELETE_CONFIRM_PHRASE}</span> yazın
+                </label>
+                <input
+                  type="text"
+                  value={deleteConfirmText}
+                  onChange={(e) => setDeleteConfirmText(e.target.value)}
+                  placeholder={DELETE_CONFIRM_PHRASE}
+                  autoCapitalize="characters"
+                  autoCorrect="off"
+                  className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500"
+                />
+                {deleteError && (
+                  <p className="mt-2 text-xs text-red-600 flex items-start gap-1.5">
+                    <span className="material-icons-round text-sm">error</span>
+                    {deleteError}
+                  </p>
+                )}
+                <div className="mt-5 flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setShowDeleteDialog(false)}
+                    disabled={deleting}
+                    className="flex-1 py-3 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold text-sm transition-colors disabled:opacity-60"
+                  >
+                    Vazgeç
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleDeleteAccount}
+                    disabled={deleting || deleteConfirmText.trim() !== DELETE_CONFIRM_PHRASE}
+                    className="flex-1 py-3 rounded-xl bg-red-600 hover:bg-red-700 text-white font-semibold text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  >
+                    {deleting ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                        Siliniyor…
+                      </>
+                    ) : (
+                      "Hesabı Sil"
+                    )}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* App info */}
           <div className="text-center pb-8 space-y-1">

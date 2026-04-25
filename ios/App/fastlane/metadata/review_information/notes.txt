@@ -1,0 +1,34 @@
+Pano15 is a private utility app for students of a single Turkish religious vocational high school (Bahçelievler 15 Temmuz Şehitleri Anadolu İmam Hatip Lisesi) in Istanbul.
+
+WHY ACCOUNT IS REQUIRED:
+The core value (mock-exam tracking, personalized study schedule, profile, prayer notifications) is tied to a student account. Demo credentials provided.
+
+DEMO ACCOUNT (student role, class 12A, day-student):
+Username: reviewer@pano15.test
+Password: Pano15Reviewer2026!
+
+HOW TO REVIEW (5 minutes):
+1. Launch app — splash → login screen
+2. Login with demo credentials
+3. Bottom nav, tap each tab:
+   - Ana Sayfa: dashboard with prayer-time countdown, today's classes, study sessions
+   - Program: full week class schedule for 12A (Mon-Fri tabs)
+   - Takip: mock-exam tracker, tap + to add a sample result
+   - Ibadet: prayer times + Quran reader (tap "Dinle" on a verse for audio)
+   - Profil: profile info; "Hesabimi Sil" button at bottom satisfies Guideline 5.1.1(v)
+
+ACCOUNT DELETION:
+Profile tab > "Hesabimi Sil" > type "SIL" to confirm > account + all data permanently deleted.
+
+THIRD-PARTY APIs (read-only, no PII sent):
+- diyanet.gov.tr (Turkish official prayer times)
+- api.alquran.cloud (Quran text + audio recitations)
+- nominatim.openstreetmap.org (district lookup)
+
+DEFAULT LOCATION: Istanbul (district 9541), target audience is Istanbul-based.
+
+NO IAP. NO ADS. NO TRACKING. NO THIRD-PARTY ANALYTICS SDKs.
+
+Privacy: https://15temmuz.fennaver.tech/privacy
+Support: https://15temmuz.fennaver.tech/destek
+Contact: eshagh@fennaver.com

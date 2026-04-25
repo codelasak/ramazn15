@@ -1,7 +1,14 @@
 import { NextResponse } from "next/server";
 import { eq } from "drizzle-orm";
 import { db } from "../../../../lib/db";
-import { users } from "../../../../lib/schema";
+import {
+  users,
+  announcements,
+  mealMenus,
+  classSchedules,
+  exams,
+  events,
+} from "../../../../lib/schema";
 import { apiAuthErrorResponse, requireUser } from "../../../../lib/api-auth";
 
 export const runtime = "nodejs";
@@ -86,6 +93,41 @@ export async function PATCH(req: Request) {
         targetNet: updated.targetNet,
       },
     });
+  } catch (err) {
+    return apiAuthErrorResponse(err);
+  }
+}
+
+// Apple App Store Guideline 5.1.1(v) — kullanici, hesabini ve iliskili
+// verilerini app icinden kalici olarak silebilmeli.
+//
+// Akis:
+//   1) Bu kullanicinin createdBy referansi olan tablolarda createdBy=null
+//      yap (admin hesabi silindiginde foreign key blocku olmasin).
+//   2) users tablosundan satiri sil. mock_exam_results.userId ON DELETE
+//      CASCADE oldugu icin bu kullanicinin tum deneme sonuclari da silinir.
+export async function DELETE(req: Request) {
+  try {
+    const me = await requireUser(req);
+
+    await db
+      .update(announcements)
+      .set({ createdBy: null })
+      .where(eq(announcements.createdBy, me.id));
+    await db
+      .update(mealMenus)
+      .set({ createdBy: null })
+      .where(eq(mealMenus.createdBy, me.id));
+    await db
+      .update(classSchedules)
+      .set({ createdBy: null })
+      .where(eq(classSchedules.createdBy, me.id));
+    await db.update(exams).set({ createdBy: null }).where(eq(exams.createdBy, me.id));
+    await db.update(events).set({ createdBy: null }).where(eq(events.createdBy, me.id));
+
+    await db.delete(users).where(eq(users.id, me.id));
+
+    return NextResponse.json({ ok: true });
   } catch (err) {
     return apiAuthErrorResponse(err);
   }

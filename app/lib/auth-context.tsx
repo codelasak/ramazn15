@@ -39,6 +39,7 @@ interface AuthContextValue {
     isBoarder?: boolean;
   }) => Promise<void>;
   logout: () => Promise<void>;
+  deleteAccount: () => Promise<void>;
   refreshUser: () => Promise<void>;
 }
 
@@ -147,6 +148,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     []
   );
 
+  const deleteAccount = useCallback(async () => {
+    dbg("[auth-ctx]", "deleteAccount.apiJson begin");
+    await apiJson("/api/v1/auth/me", { method: "DELETE" });
+    dbg("[auth-ctx]", "deleteAccount.apiJson done, clearSession");
+    await clearSession();
+    setUser(null);
+    setStatus("unauthenticated");
+    dbg("[auth-ctx]", "deleteAccount complete");
+  }, []);
+
   const logout = useCallback(async () => {
     dbg("[auth-ctx]", "logout.apiJson begin");
     try {
@@ -165,8 +176,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const value = useMemo<AuthContextValue>(
-    () => ({ status, user, login, register, logout, refreshUser }),
-    [status, user, login, register, logout, refreshUser]
+    () => ({ status, user, login, register, logout, deleteAccount, refreshUser }),
+    [status, user, login, register, logout, deleteAccount, refreshUser]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

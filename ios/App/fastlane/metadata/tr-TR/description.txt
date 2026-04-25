@@ -1,0 +1,30 @@
+Pano15, Bahçelievler 15 Temmuz Şehitleri Anadolu İmam Hatip Lisesi öğrencileri için hazırlanmış bütünleşik bir mobil panodur. Okul hayatınızda ihtiyaç duyduğunuz tüm bilgilere tek bir uygulamadan kolayca ulaşabilirsiniz.
+
+ÖZELLİKLER
+
+Akademik Takip
+• Deneme sınavı sonuçlarınızı kaydedin, derslere göre net analizini görüntüleyin
+• Kişisel ders programınızı takip edin
+• Okul duyurularını ve haberleri anlık takip edin
+• Hedef üniversite ve hedef net belirleyin, ilerlemenizi ölçün
+
+İbadet
+• Bulunduğunuz konuma göre günlük namaz vakitleri
+• Kuran-ı Kerim mealli okuma (Diyanet meali) ve ses kaydı eşliğinde dinleme
+• 114 sure desteği
+
+Beslenme
+• Pansiyon yemekhane menüsünü görüntüleyin
+• Sahur ve iftar için tarif önerileri (Ramazan ayında)
+
+Profil ve Topluluk
+• Sınıf, bölüm ve pansiyon bilgilerinizi tek bir profilde tutun
+• Okulun resmi kanallarına ve geliştirici ekibine ulaşın
+
+GÜVENLİK
+Tüm verileriniz HTTPS/TLS ile şifrelenir. Şifreleriniz hash'lenerek saklanır; düz metin parolaya hiçbir zaman erişilmez. Reklam, takip yazılımı veya üçüncü taraf analytics kullanmıyoruz.
+
+DESTEK
+Hata bildirimleri, geri bildirim ve hesap silme talepleri için: 15temmuz.fennaver.tech/destek
+
+Pano15, Codelasak ekibinin geliştirdiği özgün bir uygulamadır.
