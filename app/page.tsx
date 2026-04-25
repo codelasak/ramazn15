@@ -40,14 +40,16 @@ export default async function Home() {
   const meals = await db.select().from(mealMenus).orderBy(desc(mealMenus.date)).limit(3);
   const latestAnnouncements = await db.select().from(announcements).orderBy(desc(announcements.createdAt)).limit(3);
 
-  // Fetch today's study sessions if boarder
-  let todaysStudySessions: any[] = [];
-  if (isBoarder) {
-    todaysStudySessions = await db.select()
-      .from(studySessions)
-      .where(eq(studySessions.dayOfWeek, todayDayOfWeek))
-      .orderBy(asc(studySessions.startTime));
-  }
+  // Fetch all study sessions (weekly schedule)
+  const allStudySessions = await db.select()
+    .from(studySessions)
+    .orderBy(asc(studySessions.dayOfWeek), asc(studySessions.startTime));
+  
+  // Serialize to avoid Date serialization issues with client components
+  const todaysStudySessions = allStudySessions.map(s => ({
+    ...s,
+    updatedAt: s.updatedAt.toISOString(),
+  }));
   const upcomingExams = await db
     .select()
     .from(exams)
