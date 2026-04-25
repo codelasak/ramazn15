@@ -273,8 +273,9 @@ export default function DashboardScreen({ meals, announcements, upcomingExam, st
                       <div className="flex-1">
                         <p className="text-sm font-semibold text-gray-800 dark:text-gray-900">{schedule.subject}</p>
                         <p className="text-xs text-gray-500 dark:text-gray-700">
-                          {schedule.startTime.slice(0, 5)} - {schedule.endTime.slice(0, 5)}
-                          {schedule.teacher && ` • ${schedule.teacher}`}
+                          {schedule.period}. Ders
+                          {schedule.teacherName && ` • ${schedule.teacherName}`}
+                          {schedule.room && ` • ${schedule.room}`}
                         </p>
                       </div>
                     </div>
@@ -288,39 +289,41 @@ export default function DashboardScreen({ meals, announcements, upcomingExam, st
             </div>
           </section>
 
-          {/* Today's Study Sessions (Boarders only) */}
-          {user.isBoarder && (
-            <section className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 text-gray-800 dark:text-gray-900">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-base font-bold text-gray-800 dark:text-gray-900 flex items-center gap-2">
-                  <span className="material-icons-round text-amber-500 text-xl">menu_book</span>
-                  Bugünkü Etütler
-                </h2>
-              </div>
-              <div className="space-y-2.5">
-                {studySessions && studySessions.length > 0 ? (
-                  studySessions.map((session, index) => (
+          {/* Study Sessions (Etüt) */}
+          <section className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 text-gray-800 dark:text-gray-900">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-base font-bold text-gray-800 dark:text-gray-900 flex items-center gap-2">
+                <span className="material-icons-round text-amber-500 text-xl">menu_book</span>
+                Etüt Programı
+              </h2>
+            </div>
+            <div className="space-y-2.5">
+              {studySessions && studySessions.length > 0 ? (
+                studySessions.map((session: any, index: number) => {
+                  const dayNames = ["", "Pzt", "Sal", "Çar", "Per", "Cum", "Cmt", "Paz"];
+                  const dayName = dayNames[session.dayOfWeek] || "";
+                  return (
                     <div key={session.id} className="flex items-center gap-3 p-3 bg-amber-50/50 rounded-xl border border-amber-100 text-gray-800 dark:text-gray-900">
-                      <div className="w-10 h-10 rounded-lg bg-amber-100 flex items-center justify-center">
-                        <span className="text-amber-600 font-bold text-sm">{index + 1}</span>
+                      <div className="w-10 h-10 rounded-lg bg-amber-100 flex items-center justify-center flex-shrink-0">
+                        <span className="text-amber-700 font-bold text-[11px]">{dayName}</span>
                       </div>
                       <div className="flex-1">
                         <p className="text-sm font-semibold text-gray-800 dark:text-gray-900">{session.subject ?? "Bireysel Çalışma"}</p>
                         <p className="text-xs text-gray-500 dark:text-gray-700">
-                          {session.startTime.slice(0, 5)} - {session.endTime.slice(0, 5)}
+                          {session.startTime?.slice(0, 5)} - {session.endTime?.slice(0, 5)}
                           {session.location && ` • ${session.location}`}
                         </p>
                       </div>
                     </div>
-                  ))
-                ) : (
-                  <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl text-center text-gray-800 dark:text-gray-900">
-                    <p className="text-sm text-gray-500 dark:text-gray-700 w-full">Bugün için planlanmış etüt yok.</p>
-                  </div>
-                )}
-              </div>
-            </section>
-          )}
+                  );
+                })
+              ) : (
+                <div className="p-4 bg-gray-50 rounded-xl text-center border border-gray-100 text-gray-800 dark:text-gray-900">
+                  <p className="text-sm text-gray-500 dark:text-gray-700">Henüz etüt programı eklenmedi.</p>
+                </div>
+              )}
+            </div>
+          </section>
 
           {/* Cafeteria Menu Card */}
           <section className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 text-gray-800 dark:text-gray-900">
@@ -394,19 +397,7 @@ export default function DashboardScreen({ meals, announcements, upcomingExam, st
           </section>
 
           {/* Quick Actions */}
-          <section className="grid grid-cols-4 gap-3 pb-10">
-            <Link href="/ibadet" className="flex flex-col items-center gap-2 group">
-              <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center shadow-sm border border-gray-100 group-active:scale-95 transition-transform group-hover:border-primary/30 group-hover:shadow-md text-gray-800 dark:text-gray-900">
-                <span className="material-icons-round text-primary text-2xl">mosque</span>
-              </div>
-              <span className="text-xs font-semibold text-gray-500 dark:text-gray-700 text-center">Namaz</span>
-            </Link>
-            <Link href="/ibadet" className="flex flex-col items-center gap-2 group">
-              <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center shadow-sm border border-gray-100 group-active:scale-95 transition-transform group-hover:border-primary/30 group-hover:shadow-md text-gray-800 dark:text-gray-900">
-                <span className="material-icons-round text-primary text-2xl">menu_book</span>
-              </div>
-              <span className="text-xs font-semibold text-gray-500 dark:text-gray-700 text-center">Kur'an</span>
-            </Link>
+          <section className="grid grid-cols-2 gap-3 pb-10">
             <Link href="/takip" className="flex flex-col items-center gap-2 group">
               <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center shadow-sm border border-gray-100 group-active:scale-95 transition-transform group-hover:border-primary/30 group-hover:shadow-md text-gray-800 dark:text-gray-900">
                 <span className="material-icons-round text-indigo-500 text-2xl">quiz</span>

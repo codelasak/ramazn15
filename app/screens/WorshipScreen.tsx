@@ -96,8 +96,8 @@ export default function WorshipScreen() {
               </h1>
               <p className="text-gray-600 dark:text-emerald-50/70 mt-1 text-sm">{dateStr}</p>
             </div>
-            <Link href="/profil" className="p-2 bg-white/60 dark:bg-white/10 rounded-full backdrop-blur-sm shadow-sm text-gray-800 dark:text-white">
-              <span className="material-icons-round text-primary-dark dark:text-white text-2xl">notifications</span>
+            <Link href="/" className="p-2 bg-white/60 dark:bg-white/10 rounded-full backdrop-blur-sm shadow-sm text-gray-800 dark:text-white">
+              <span className="material-icons-round text-primary-dark dark:text-white text-2xl">home</span>
             </Link>
           </div>
 
