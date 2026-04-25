@@ -1,83 +1,83 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import AppShell from "./shell/AppShell";
 import DashboardScreen from "./screens/DashboardScreen";
-import { db } from "./lib/db";
-import { mealMenus, announcements, exams, users, studySessions, classSchedules } from "./lib/schema";
-import { desc, eq, asc, or, isNull, and } from "drizzle-orm";
-import { getServerSession } from "next-auth";
-import { authOptions } from "./lib/auth";
+import { useAuth } from "./lib/auth-context";
+import { apiJson, ApiError } from "./lib/api-client";
+import type { DashboardData } from "./lib/dashboard-types";
 
-export default async function Home() {
-  const session = await getServerSession(authOptions);
-  let userClassName: string | null = null;
-  let isBoarder = false;
-  
-  if (session?.user?.id) {
-    const [dbUser] = await db.select().from(users).where(eq(users.id, session.user.id));
-    if (dbUser) {
-      userClassName = dbUser.className?.replace(/\D/g, "") || null;
-      isBoarder = dbUser.isBoarder;
+export default function Home() {
+  const { status } = useAuth();
+  const router = useRouter();
+  const [data, setData] = useState<DashboardData | null>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.replace("/giris");
     }
-  }
-  
-  const now = new Date();
-  const todayDayOfWeek = now.getDay() || 7; // 1-7 (Mon-Sun)
-  
-  // Fetch today's class schedules if user has a class
-  let todaysSchedules: any[] = [];
-  const fullClassName = session?.user?.id ? (await db.select({ className: users.className }).from(users).where(eq(users.id, session.user.id)))[0]?.className : null;
-  if (fullClassName) {
-    todaysSchedules = await db.select()
-      .from(classSchedules)
-      .where(
-        and(
-          eq(classSchedules.dayOfWeek, todayDayOfWeek),
-          eq(classSchedules.className, fullClassName)
-        )
-      )
-      .orderBy(asc(classSchedules.period));
-  }
-  
-  const meals = await db.select().from(mealMenus).orderBy(desc(mealMenus.date)).limit(3);
-  const latestAnnouncements = await db.select().from(announcements).orderBy(desc(announcements.createdAt)).limit(3);
+  }, [status, router]);
 
-  // Fetch all study sessions (weekly schedule)
-  const allStudySessions = await db.select()
-    .from(studySessions)
-    .orderBy(asc(studySessions.dayOfWeek), asc(studySessions.startTime));
-  
-  // Serialize to avoid Date serialization issues with client components
-  const todaysStudySessions = allStudySessions.map(s => ({
-    ...s,
-    updatedAt: s.updatedAt.toISOString(),
-  }));
-  const upcomingExams = await db
-    .select()
-    .from(exams)
-    .where(
-      or(
-        isNull(exams.className),
-        userClassName ? eq(exams.className, userClassName) : undefined
-      )
-    )
-    .orderBy(asc(exams.examDate));
+  useEffect(() => {
+    if (status !== "authenticated") return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const payload = await apiJson<DashboardData>("/api/v1/dashboard");
+        if (!cancelled) setData(payload);
+      } catch (err) {
+        if (cancelled) return;
+        if (err instanceof ApiError && err.status === 401) {
+          router.replace("/giris");
+          return;
+        }
+        setLoadError("Veriler yüklenemedi.");
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [status, router]);
 
-  // Find the closest one in the future
-  const dbUpcomingExam = upcomingExams.find(e => e.examDate.getTime() > now.getTime()) || null;
-  const upcomingExam = dbUpcomingExam ? {
-    title: dbUpcomingExam.title,
-    examType: dbUpcomingExam.examType,
-    examDate: dbUpcomingExam.examDate.toISOString(),
-    subject: dbUpcomingExam.subject ?? null,
-  } : null;
+  if (status === "loading" || (status === "authenticated" && !data && !loadError)) {
+    return (
+      <AppShell>
+        <div className="min-h-dvh flex items-center justify-center">
+          <div className="w-10 h-10 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
+        </div>
+      </AppShell>
+    );
+  }
+
+  if (loadError) {
+    return (
+      <AppShell>
+        <div className="min-h-dvh flex flex-col items-center justify-center gap-3 px-6">
+          <span className="material-icons-round text-4xl text-red-400">error_outline</span>
+          <p className="text-sm text-gray-600 dark:text-gray-400 text-center">{loadError}</p>
+          <button
+            onClick={() => location.reload()}
+            className="text-xs font-semibold text-primary bg-primary/10 px-4 py-2 rounded-lg"
+          >
+            Yeniden Dene
+          </button>
+        </div>
+      </AppShell>
+    );
+  }
+
+  if (!data) return null;
 
   return (
     <AppShell>
-      <DashboardScreen 
-        meals={meals} 
-        announcements={latestAnnouncements} 
-        upcomingExam={upcomingExam} 
-        studySessions={todaysStudySessions} 
-        schedules={todaysSchedules}
+      <DashboardScreen
+        meals={data.meals}
+        announcements={data.announcements}
+        upcomingExam={data.upcomingExam}
+        studySessions={data.studySessions}
+        schedules={data.schedules}
       />
     </AppShell>
   );

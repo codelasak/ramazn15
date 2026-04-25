@@ -1,11 +1,19 @@
 "use client";
 
 import Link from "next/link";
-import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { usePrayerTimes } from "../shared/usePrayerTimes";
 import { msToCountdown, setDateToHm } from "../shared/time";
+import { useAuth } from "../lib/auth-context";
+import { isNativePlatform } from "../lib/platform";
+import type {
+  AnnouncementRow,
+  ClassScheduleRow,
+  MealRow,
+  StudySessionRow,
+  UpcomingExam,
+} from "../lib/dashboard-types";
 
 const DAY_NAMES = ["Pazar", "Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi"];
 
@@ -34,20 +42,15 @@ const PRAYER_KEYS = [
 ] as const;
 
 interface DashboardScreenProps {
-  meals: any[];
-  announcements: any[];
-  upcomingExam?: {
-    title: string;
-    examDate: string;
-    examType: string;
-    subject?: string | null;
-  } | null;
-  studySessions?: any[];
-  schedules?: any[];
+  meals: MealRow[];
+  announcements: AnnouncementRow[];
+  upcomingExam?: UpcomingExam | null;
+  studySessions?: StudySessionRow[];
+  schedules?: ClassScheduleRow[];
 }
 
 export default function DashboardScreen({ meals, announcements, upcomingExam, studySessions, schedules }: DashboardScreenProps) {
-  const { data: session, status } = useSession();
+  const { user, status, logout } = useAuth();
   const router = useRouter();
   const { times, loading: prayerLoading, districtId } = usePrayerTimes();
 
@@ -64,7 +67,18 @@ export default function DashboardScreen({ meals, announcements, upcomingExam, st
     return () => window.clearInterval(id);
   }, []);
 
-  const user = session?.user;
+  const handleLogout = async () => {
+    await logout();
+    if (!isNativePlatform()) {
+      try {
+        const { signOut } = await import("next-auth/react");
+        await signOut({ redirect: false });
+      } catch {
+        // best-effort: web NextAuth oturumunu da kapat.
+      }
+    }
+    router.push("/giris");
+  };
   const dateStr = useMemo(() => formatTurkishDate(now), [now]);
   const greeting = useMemo(() => getGreeting(now.getHours()), [now]);
 
@@ -271,7 +285,7 @@ export default function DashboardScreen({ meals, announcements, upcomingExam, st
             </div>
             <div className="space-y-2.5">
               {schedules && schedules.length > 0 ? (
-                schedules.map((schedule: any) => {
+                schedules.map((schedule) => {
                   return (
                     <div key={schedule.id} className="flex items-center gap-3 p-3 rounded-xl border bg-gray-50 border-transparent">
                       <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-gray-100 text-gray-500 dark:text-gray-700">
@@ -306,7 +320,7 @@ export default function DashboardScreen({ meals, announcements, upcomingExam, st
             </div>
             <div className="space-y-2.5">
               {studySessions && studySessions.length > 0 ? (
-                studySessions.map((session: any, index: number) => {
+                studySessions.map((session) => {
                   const dayNames = ["", "Pzt", "Sal", "Çar", "Per", "Cum", "Cmt", "Paz"];
                   const dayName = dayNames[session.dayOfWeek] || "";
                   return (
@@ -411,7 +425,7 @@ export default function DashboardScreen({ meals, announcements, upcomingExam, st
               </div>
               <span className="text-xs font-semibold text-gray-500 dark:text-gray-700 text-center">Denemeler</span>
             </Link>
-            <button onClick={() => signOut()} className="flex flex-col items-center gap-2 group">
+            <button onClick={handleLogout} className="flex flex-col items-center gap-2 group">
               <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center shadow-sm border border-gray-100 group-active:scale-95 transition-transform group-hover:border-red-200 group-hover:shadow-md text-gray-800 dark:text-gray-900">
                 <span className="material-icons-round text-gray-400 dark:text-gray-600 text-2xl">logout</span>
               </div>
