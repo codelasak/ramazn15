@@ -64,7 +64,8 @@ export default async function Home() {
   const upcomingExam = dbUpcomingExam ? {
     title: dbUpcomingExam.title,
     examType: dbUpcomingExam.examType,
-    examDate: dbUpcomingExam.examDate.toISOString()
+    examDate: dbUpcomingExam.examDate.toISOString(),
+    subject: dbUpcomingExam.subject ?? null,
   } : null;
 
   return (

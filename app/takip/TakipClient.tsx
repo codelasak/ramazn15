@@ -80,23 +80,69 @@ export default function TakipClient({ results }: { results: any[] }) {
             <p className="text-gray-500 dark:text-gray-700 text-sm">Henüz bir deneme sonucu girmediniz.</p>
           </div>
         ) : (
-          results.map((r) => (
-            <div key={r.id} className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between text-gray-800 dark:text-gray-900">
-              <div>
-                <p className="font-bold text-gray-800 dark:text-gray-900">{r.examName}</p>
-                <div className="flex gap-2 items-center mt-1">
-                  <span className="bg-gray-100 text-gray-500 dark:text-gray-700 text-[10px] uppercase font-bold px-2 py-0.5 rounded">
-                    {getExamType(r)}
-                  </span>
-                  <span className="text-xs text-gray-400 dark:text-gray-600">{formatExamDate(r.examDate)}</span>
+          results.map((r) => {
+            const calcNet = (c: number, w: number) => c - (w / 4);
+            const turkishNet = calcNet(r.turkishCorrect, r.turkishWrong);
+            const mathNet = calcNet(r.mathCorrect, r.mathWrong);
+            const socialNet = calcNet(r.socialCorrect, r.socialWrong);
+            const scienceNet = calcNet(r.scienceCorrect, r.scienceWrong);
+
+            const subjects = [
+              { label: "Türkçe", correct: r.turkishCorrect, wrong: r.turkishWrong, net: turkishNet, color: "text-blue-600", bg: "bg-blue-50", barColor: "bg-blue-500" },
+              { label: "Matematik", correct: r.mathCorrect, wrong: r.mathWrong, net: mathNet, color: "text-emerald-600", bg: "bg-emerald-50", barColor: "bg-emerald-500" },
+              { label: "Sosyal", correct: r.socialCorrect, wrong: r.socialWrong, net: socialNet, color: "text-amber-600", bg: "bg-amber-50", barColor: "bg-amber-500" },
+              { label: "Fen", correct: r.scienceCorrect, wrong: r.scienceWrong, net: scienceNet, color: "text-purple-600", bg: "bg-purple-50", barColor: "bg-purple-500" },
+            ];
+
+            return (
+              <details key={r.id} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden group">
+                <summary className="flex items-center justify-between p-4 cursor-pointer list-none [&::-webkit-details-marker]:hidden hover:bg-gray-50 transition-colors">
+                  <div>
+                    <p className="font-bold text-gray-800 dark:text-gray-900">{r.examName}</p>
+                    <div className="flex gap-2 items-center mt-1">
+                      <span className="bg-gray-100 text-gray-500 dark:text-gray-700 text-[10px] uppercase font-bold px-2 py-0.5 rounded">
+                        {getExamType(r)}
+                      </span>
+                      <span className="text-xs text-gray-400 dark:text-gray-600">{formatExamDate(r.examDate)}</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="text-right">
+                      <p className="text-xs text-gray-500 dark:text-gray-700 mb-0.5">Toplam Net</p>
+                      <p className="text-xl font-bold text-primary">{getTotalNet(r).toFixed(2)}</p>
+                    </div>
+                    <span className="material-icons-round text-gray-400 text-lg transition-transform group-open:rotate-180">expand_more</span>
+                  </div>
+                </summary>
+                <div className="px-4 pb-4 border-t border-gray-100">
+                  <div className="grid grid-cols-2 gap-2.5 mt-3">
+                    {subjects.map((s) => (
+                      <div key={s.label} className={`${s.bg} rounded-xl p-3`}>
+                        <div className="flex items-center justify-between mb-2">
+                          <span className={`text-xs font-bold ${s.color} uppercase tracking-wide`}>{s.label}</span>
+                          <span className={`text-lg font-bold ${s.color}`}>{s.net.toFixed(2)}</span>
+                        </div>
+                        <div className="flex items-center gap-3 text-xs text-gray-500">
+                          <span className="flex items-center gap-1">
+                            <span className="w-2 h-2 rounded-full bg-emerald-400 inline-block"></span>
+                            {s.correct}D
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <span className="w-2 h-2 rounded-full bg-red-400 inline-block"></span>
+                            {s.wrong}Y
+                          </span>
+                        </div>
+                        {/* Net bar */}
+                        <div className="mt-2 h-1.5 bg-white/60 rounded-full overflow-hidden">
+                          <div className={`h-full ${s.barColor} rounded-full transition-all`} style={{ width: `${Math.max(0, Math.min(100, (s.net / 40) * 100))}%` }}></div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
-              <div className="text-right">
-                <p className="text-xs text-gray-500 dark:text-gray-700 mb-0.5">Toplam Net</p>
-                <p className="text-xl font-bold text-primary">{getTotalNet(r).toFixed(2)}</p>
-              </div>
-            </div>
-          ))
+              </details>
+            );
+          })
         )}
       </div>
 

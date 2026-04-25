@@ -25,6 +25,7 @@ export const departmentEnum = pgEnum("department", [
 export const announcementCategoryEnum = pgEnum("announcement_category", [
   "genel",
   "pansiyon",
+  "evciler",
   "sinav",
   "etkinlik",
 ]);
