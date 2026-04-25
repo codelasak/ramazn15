@@ -203,12 +203,12 @@ export default function DashboardScreen({ meals, announcements, upcomingExam, st
             {nextPrayer ? (
               <div className="flex items-center justify-between relative z-10">
                 <div>
-                  <p className="text-2xl font-bold text-gray-900">{nextPrayer.label}</p>
-                  <p className="text-lg font-semibold text-primary">{nextPrayer.time}</p>
+                  <p className="text-3xl font-bold text-gray-900">{nextPrayer.label}</p>
+                  <p className="text-2xl font-semibold text-primary">{nextPrayer.time}</p>
                 </div>
                 <div className="text-right">
                   <p className="text-sm text-gray-500 dark:text-gray-700 mb-1">Kalan</p>
-                  <p className="text-xl font-bold text-gray-800 dark:text-gray-900 tabular-nums">{nextPrayer.countdown}</p>
+                  <p className="text-2xl font-bold text-gray-800 dark:text-gray-900 tabular-nums">{nextPrayer.countdown}</p>
                 </div>
               </div>
             ) : !districtId ? (
@@ -241,14 +241,14 @@ export default function DashboardScreen({ meals, announcements, upcomingExam, st
                     <div
                       key={p.key}
                       className={`flex flex-col items-center min-w-[3.5rem] py-2 px-1 rounded-xl transition-all ${isNext
-                          ? "bg-primary text-white shadow-sm"
+                          ? "bg-primary text-white shadow-sm scale-110 -translate-y-1"
                           : isPast
                             ? "opacity-40"
                             : ""
                         }`}
                     >
-                      <span className={`text-[10px] mb-0.5 ${isNext ? "opacity-80" : "text-gray-500 dark:text-gray-700"}`}>{p.label}</span>
-                      <span className={`text-sm font-bold ${isNext ? "" : "text-gray-800 dark:text-gray-900"}`}>
+                      <span className={`text-xs mb-0.5 ${isNext ? "opacity-90" : "text-gray-500 dark:text-gray-700"}`}>{p.label}</span>
+                      <span className={`text-base font-bold ${isNext ? "" : "text-gray-800 dark:text-gray-900"}`}>
                         {typeof val === "string" ? val : "—"}
                       </span>
                     </div>
