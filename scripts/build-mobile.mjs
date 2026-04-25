@@ -8,13 +8,45 @@
  */
 
 import { spawnSync } from 'node:child_process';
-import { existsSync, mkdirSync, renameSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, renameSync, rmSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
 const ROOT = resolve(__dirname, '..');
 const STAGING = join(ROOT, '.mobile-staging');
+
+// .env.mobile.local > .env.mobile (her ikisi de opsiyonel)
+function loadMobileEnv() {
+  const candidates = ['.env.mobile.local', '.env.mobile'];
+  for (const rel of candidates) {
+    const file = join(ROOT, rel);
+    if (!existsSync(file)) continue;
+    const content = readFileSync(file, 'utf8');
+    let count = 0;
+    for (const rawLine of content.split(/\r?\n/)) {
+      const line = rawLine.trim();
+      if (!line || line.startsWith('#')) continue;
+      const eq = line.indexOf('=');
+      if (eq < 0) continue;
+      const key = line.slice(0, eq).trim();
+      let value = line.slice(eq + 1).trim();
+      if ((value.startsWith('"') && value.endsWith('"')) ||
+          (value.startsWith("'") && value.endsWith("'"))) {
+        value = value.slice(1, -1);
+      }
+      // Var olan process.env ezilmesin (CI override icin)
+      if (process.env[key] !== undefined) continue;
+      process.env[key] = value;
+      count++;
+    }
+    if (count > 0) {
+      console.log(`[mobile-build] env :: ${rel} icinden ${count} degisken yuklendi`);
+    }
+    return rel;
+  }
+  return null;
+}
 
 // Static export sirasinda devre disi birakilacak klasorler.
 // /giris ve /kayit artik JWT useAuth ile calisiyor; mobil build'e dahil.
@@ -97,6 +129,17 @@ async function main() {
     ensurePlaceholderIndex();
     log('done', 'out/ placeholder hazirlandi');
     return;
+  }
+
+  loadMobileEnv();
+  if (!process.env.NEXT_PUBLIC_API_URL) {
+    log(
+      'warn',
+      'NEXT_PUBLIC_API_URL tanimsiz. Mobil app relative URL kullanir ve VPS\'e ulasmaz.\n' +
+        '          .env.mobile.local olustur veya: NEXT_PUBLIC_API_URL=... npm run mobile:build'
+    );
+  } else {
+    log('env', `NEXT_PUBLIC_API_URL = ${process.env.NEXT_PUBLIC_API_URL}`);
   }
 
   let isolated = false;
