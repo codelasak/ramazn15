@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { apiJson } from "../lib/api-client";
 
 export type SurahListItem = {
   number: number;
@@ -59,9 +60,11 @@ export function useSurahList(): UseSurahListResult {
       setLoading(true);
       setError(null);
       try {
-        const res = await fetch("/api/quran/surah-list", { cache: "force-cache" });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const json = (await res.json()) as { surahs: SurahListItem[] };
+        const json = await apiJson<{ surahs: SurahListItem[] }>(
+          "/api/quran/surah-list",
+          { method: "GET" },
+          { auth: false }
+        );
         if (!cancelled) setSurahs(Array.isArray(json.surahs) ? json.surahs : []);
       } catch (e) {
         if (!cancelled) {
@@ -99,9 +102,11 @@ export function useSurah(number: number | null): UseSurahResult {
       setLoading(true);
       setError(null);
       try {
-        const res = await fetch(`/api/quran/surah?number=${number}`, { cache: "force-cache" });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const json = (await res.json()) as QuranSurahEditions;
+        const json = await apiJson<QuranSurahEditions>(
+          `/api/quran/surah?number=${number}`,
+          { method: "GET" },
+          { auth: false }
+        );
         if (!cancelled) setData(json);
       } catch (e) {
         if (!cancelled) {

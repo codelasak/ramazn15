@@ -6,6 +6,7 @@ import { useState } from "react";
 import { useAuth } from "../lib/auth-context";
 import { ApiError } from "../lib/api-client";
 import { isNativePlatform } from "../lib/platform";
+import { clearDebugLog, dbg } from "../lib/debug-log";
 
 export default function LoginScreen() {
   const router = useRouter();
@@ -45,18 +46,36 @@ export default function LoginScreen() {
     e.preventDefault();
     setError("");
     setLoading(true);
+    clearDebugLog();
+    const native = isNativePlatform();
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "(empty)";
+    dbg("[login]", "submit", "native=" + native, "api=" + apiUrl, "email=" + email);
 
+    let outerTimer: ReturnType<typeof setTimeout> | null = null;
     try {
-      await performLogin(email, password);
+      const timeoutPromise = new Promise<never>((_, reject) => {
+        outerTimer = setTimeout(() => {
+          dbg("[login]", "OUTER hard timeout 20s fired");
+          reject(new Error("Hard timeout 20s - request hung"));
+        }, 20000);
+      });
+      await Promise.race([performLogin(email, password), timeoutPromise]);
+      dbg("[login]", "performLogin success");
       router.push("/");
       router.refresh();
     } catch (err) {
+      dbg("[login]", "caught error", err instanceof Error ? `${err.name}: ${err.message}` : String(err));
       if (err instanceof ApiError && err.status === 401) {
         setError("E-posta veya şifre hatalı.");
+      } else if (err instanceof ApiError) {
+        setError(`API ${err.status}: ${err.message}`);
+      } else if (err instanceof Error) {
+        setError(`Hata: ${err.name} - ${err.message}`);
       } else {
-        setError("Bir hata oluştu. Lütfen tekrar deneyin.");
+        setError(`Bilinmeyen hata: ${String(err)}`);
       }
     } finally {
+      if (outerTimer) clearTimeout(outerTimer);
       setLoading(false);
     }
   }

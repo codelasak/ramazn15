@@ -15,6 +15,7 @@ import {
   persistSession,
   type AuthUser,
 } from "./auth-storage";
+import { dbg } from "./debug-log";
 
 /**
  * Pano15 mobil + web client auth context.
@@ -54,13 +55,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
 
   const refreshUser = useCallback(async () => {
+    dbg("[auth-ctx]", "refreshUser begin");
     try {
       const data = await apiJson<{ user: AuthUser }>("/api/v1/auth/me", {
         method: "GET",
       });
+      dbg("[auth-ctx]", "refreshUser ok", data.user.email);
       setUser(data.user);
       setStatus("authenticated");
     } catch (err) {
+      dbg("[auth-ctx]", "refreshUser fail", err instanceof Error ? err.message : String(err));
       if (err instanceof ApiError && err.status === 401) {
         await clearSession();
         setUser(null);
@@ -73,6 +77,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     let cancelled = false;
     (async () => {
       try {
+        dbg("[auth-ctx]", "init: getStoredUser (3s timeout)");
         // Storage cagrilari herhangi bir nedenle takilirsa 3sn icinde
         // unauthenticated state'e dus, kullaniciyi giris ekranina at.
         const timeoutPromise = new Promise<null>((resolve) =>
@@ -81,15 +86,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const stored = await Promise.race([getStoredUser(), timeoutPromise]);
         if (cancelled) return;
         if (stored) {
+          dbg("[auth-ctx]", "init: stored user found", stored.email);
           setUser(stored);
           setStatus("authenticated");
           refreshUser().catch(() => {});
         } else {
+          dbg("[auth-ctx]", "init: no stored user -> unauthenticated");
           setStatus("unauthenticated");
         }
       } catch (err) {
         if (!cancelled) {
-          console.error("[auth-context] init failed", err);
+          dbg("[auth-ctx]", "init failed", err instanceof Error ? err.message : String(err));
           setStatus("unauthenticated");
         }
       }
@@ -101,13 +108,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = useCallback(
     async ({ email, password }: { email: string; password: string }) => {
+      dbg("[auth-ctx]", "login.apiJson begin");
       const data = await apiJson<AuthResponse>("/api/v1/auth/login", {
         method: "POST",
         body: JSON.stringify({ email, password }),
       }, { auth: false });
+      dbg("[auth-ctx]", "login.apiJson done, persistSession begin");
       await persistSession(data);
+      dbg("[auth-ctx]", "persistSession done, setUser/setStatus");
       setUser(data.user);
       setStatus("authenticated");
+      dbg("[auth-ctx]", "login complete");
     },
     []
   );
@@ -121,26 +132,36 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       department?: AuthUser["department"];
       isBoarder?: boolean;
     }) => {
+      dbg("[auth-ctx]", "register.apiJson begin", input.email);
       const data = await apiJson<AuthResponse>("/api/v1/auth/register", {
         method: "POST",
         body: JSON.stringify(input),
       }, { auth: false });
+      dbg("[auth-ctx]", "register.apiJson done, persistSession begin");
       await persistSession(data);
+      dbg("[auth-ctx]", "persistSession done, setUser/setStatus");
       setUser(data.user);
       setStatus("authenticated");
+      dbg("[auth-ctx]", "register complete");
     },
     []
   );
 
   const logout = useCallback(async () => {
+    dbg("[auth-ctx]", "logout.apiJson begin");
     try {
       await apiJson("/api/v1/auth/logout", { method: "POST" });
-    } catch {
+      dbg("[auth-ctx]", "logout.apiJson done");
+    } catch (err) {
       // best-effort
+      dbg("[auth-ctx]", "logout.apiJson failed (best-effort)", err instanceof Error ? err.message : String(err));
     }
+    dbg("[auth-ctx]", "clearSession begin");
     await clearSession();
+    dbg("[auth-ctx]", "clearSession done, setUser(null)");
     setUser(null);
     setStatus("unauthenticated");
+    dbg("[auth-ctx]", "logout complete");
   }, []);
 
   const value = useMemo<AuthContextValue>(

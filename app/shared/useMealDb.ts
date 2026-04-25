@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { apiJson } from "../lib/api-client";
 
 export type Meal = {
   idMeal: string;
@@ -32,9 +33,11 @@ export function useCuratedMeals(list: CuratedList): UseMealsResult {
       setLoading(true);
       setError(null);
       try {
-        const res = await fetch(`/api/mealdb/curated?list=${list}`, { cache: "no-store" });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const json = (await res.json()) as { meals: Meal[] };
+        const json = await apiJson<{ meals: Meal[] }>(
+          `/api/mealdb/curated?list=${list}`,
+          { method: "GET" },
+          { auth: false }
+        );
         if (!cancelled) setMeals(Array.isArray(json.meals) ? json.meals : []);
       } catch (e) {
         if (!cancelled) {

@@ -5,6 +5,7 @@ import { ThemeProvider } from "next-themes";
 import { useEffect, type ReactNode } from "react";
 import { AuthProvider } from "./lib/auth-context";
 import { initCapacitor } from "./lib/capacitor-init";
+import DebugOverlay from "./shared/DebugOverlay";
 
 export default function Providers({ children }: { children: ReactNode }) {
   useEffect(() => {
@@ -13,7 +14,10 @@ export default function Providers({ children }: { children: ReactNode }) {
   return (
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
       <SessionProvider>
-        <AuthProvider>{children}</AuthProvider>
+        <AuthProvider>
+          {children}
+          <DebugOverlay />
+        </AuthProvider>
       </SessionProvider>
     </ThemeProvider>
   );

@@ -11,6 +11,12 @@ const config: CapacitorConfig = {
     contentInset: 'always',
   },
   plugins: {
+    // CapacitorHttp: WebView fetch/XHR cagrilarini native HTTP'ye yonlendirir.
+    // CORS preflight ve cross-origin sorunlarini bypass eder; mobil app'in
+    // VPS API'sine direkt erisebilmesi icin gerekli.
+    CapacitorHttp: {
+      enabled: true,
+    },
     SplashScreen: {
       launchShowDuration: 2000,
       launchAutoHide: true,

@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { apiJson } from "../lib/api-client";
 import { loadStoredLocation } from "./userPrefs";
 
 export type PrayerTimes = {
@@ -61,11 +62,11 @@ export function usePrayerTimes(): UsePrayerTimesResult {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`/api/diyanet/prayer-times?districtId=${districtId}`, {
-        cache: "no-store",
-      });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const json = (await res.json()) as unknown;
+      const json = await apiJson<unknown>(
+        `/api/diyanet/prayer-times?districtId=${districtId}`,
+        { method: "GET" },
+        { auth: false }
+      );
       const extracted = extractTodayTimes(json);
       setTimes(extracted);
     } catch (e) {

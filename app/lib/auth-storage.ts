@@ -2,9 +2,13 @@
  * Pano15 client-side token storage.
  *
  * Native (Capacitor) tarafinda @capacitor/preferences ile guvenli depolama;
- * tarayicida localStorage fallback. Bu dosya hem web hem mobil ayni iskelet
- * uzerinden calismayi saglar.
+ * tarayicida localStorage fallback. Capacitor 8 + WKWebView birlesimi bazi
+ * cihazlarda Preferences cagrilarini bridge'de takmaktadir; bu yuzden HER
+ * Preferences cagrisini timeout + localStorage fallback ile sariyoruz.
  */
+import { dbg } from "./debug-log";
+
+const PREFS_TIMEOUT_MS = 2500;
 
 // Storage anahtarlari (degerleri degil): localStorage / Preferences icin kullanilir.
 const STORAGE_KEYS = {
@@ -32,37 +36,44 @@ interface PreferencesPlugin {
   remove(opts: { key: string }): Promise<void>;
 }
 
-let cachedPreferences: PreferencesPlugin | null | undefined;
-
-async function getPreferences(): Promise<PreferencesPlugin | null> {
-  if (cachedPreferences !== undefined) return cachedPreferences;
-
-  try {
-    // Capacitor sadece native build'de yuklendiginde calisir.
-    // Browser'da bu import basarili olsa bile getPlatform() === 'web' olur.
-    const cap = (await import("@capacitor/core")).Capacitor;
-    if (typeof cap?.isNativePlatform === "function" && cap.isNativePlatform()) {
-      const mod = await import("@capacitor/preferences");
-      cachedPreferences = mod.Preferences as unknown as PreferencesPlugin;
-      return cachedPreferences;
-    }
-  } catch {
-    // Capacitor mevcut degil (web build).
-  }
-  cachedPreferences = null;
-  return null;
+interface CapacitorGlobal {
+  isNativePlatform?: () => boolean;
+  Plugins?: { Preferences?: PreferencesPlugin };
 }
 
-async function readKey(key: string): Promise<string | null> {
-  try {
-    const prefs = await getPreferences();
-    if (prefs) {
-      const { value } = await prefs.get({ key });
-      return value;
-    }
-  } catch (err) {
-    console.warn("[auth-storage] Preferences.get failed, falling back to localStorage", err);
-  }
+/**
+ * Native build'de @capacitor/core & @capacitor/preferences zaten WebView
+ * yuklenirken inject edilmis durumda; window.Capacitor.Plugins.Preferences
+ * synchronous olarak hazirdir. Dynamic import (`await import(...)`) bazi
+ * cihazlarda asla resolve etmediginden burada hic kullanmiyoruz.
+ */
+function getPreferencesSync(): PreferencesPlugin | null {
+  if (typeof window === "undefined") return null;
+  const cap = (window as unknown as { Capacitor?: CapacitorGlobal }).Capacitor;
+  if (!cap?.isNativePlatform?.()) return null;
+  return cap.Plugins?.Preferences ?? null;
+}
+
+function withTimeout<T>(label: string, p: Promise<T>, ms: number): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const t = setTimeout(() => {
+      dbg("[auth-storage]", label, "TIMEOUT", ms + "ms");
+      reject(new Error(`Preferences ${label} timeout ${ms}ms`));
+    }, ms);
+    p.then(
+      (v) => {
+        clearTimeout(t);
+        resolve(v);
+      },
+      (e) => {
+        clearTimeout(t);
+        reject(e);
+      }
+    );
+  });
+}
+
+function lsGet(key: string): string | null {
   if (typeof window === "undefined") return null;
   try {
     return window.localStorage.getItem(key);
@@ -71,16 +82,7 @@ async function readKey(key: string): Promise<string | null> {
   }
 }
 
-async function writeKey(key: string, value: string): Promise<void> {
-  try {
-    const prefs = await getPreferences();
-    if (prefs) {
-      await prefs.set({ key, value });
-      return;
-    }
-  } catch (err) {
-    console.warn("[auth-storage] Preferences.set failed, falling back to localStorage", err);
-  }
+function lsSet(key: string, value: string): void {
   if (typeof window === "undefined") return;
   try {
     window.localStorage.setItem(key, value);
@@ -89,21 +91,56 @@ async function writeKey(key: string, value: string): Promise<void> {
   }
 }
 
-async function removeKey(key: string): Promise<void> {
-  try {
-    const prefs = await getPreferences();
-    if (prefs) {
-      await prefs.remove({ key });
-      return;
-    }
-  } catch (err) {
-    console.warn("[auth-storage] Preferences.remove failed, falling back to localStorage", err);
-  }
+function lsRemove(key: string): void {
   if (typeof window === "undefined") return;
   try {
     window.localStorage.removeItem(key);
   } catch {
     // ignore
+  }
+}
+
+async function readKey(key: string): Promise<string | null> {
+  const prefs = getPreferencesSync();
+  if (prefs) {
+    try {
+      dbg("[auth-storage]", "prefs.get", key);
+      const { value } = await withTimeout(`get(${key})`, prefs.get({ key }), PREFS_TIMEOUT_MS);
+      dbg("[auth-storage]", "prefs.get done", key, "value=" + (value ? "<set>" : "null"));
+      if (value != null) lsSet(key, value);
+      return value;
+    } catch (err) {
+      dbg("[auth-storage]", "prefs.get FAIL -> localStorage", key, err instanceof Error ? err.message : String(err));
+    }
+  }
+  return lsGet(key);
+}
+
+async function writeKey(key: string, value: string): Promise<void> {
+  // Always write to localStorage first (synchronous, never hangs).
+  lsSet(key, value);
+  const prefs = getPreferencesSync();
+  if (!prefs) return;
+  try {
+    dbg("[auth-storage]", "prefs.set", key);
+    await withTimeout(`set(${key})`, prefs.set({ key, value }), PREFS_TIMEOUT_MS);
+    dbg("[auth-storage]", "prefs.set done", key);
+  } catch (err) {
+    dbg("[auth-storage]", "prefs.set FAIL (localStorage already updated)", key, err instanceof Error ? err.message : String(err));
+  }
+}
+
+async function removeKey(key: string): Promise<void> {
+  // Always remove from localStorage first.
+  lsRemove(key);
+  const prefs = getPreferencesSync();
+  if (!prefs) return;
+  try {
+    dbg("[auth-storage]", "prefs.remove", key);
+    await withTimeout(`remove(${key})`, prefs.remove({ key }), PREFS_TIMEOUT_MS);
+    dbg("[auth-storage]", "prefs.remove done", key);
+  } catch (err) {
+    dbg("[auth-storage]", "prefs.remove FAIL (localStorage already cleared)", key, err instanceof Error ? err.message : String(err));
   }
 }
 
