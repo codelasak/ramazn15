@@ -17,11 +17,10 @@ const ROOT = resolve(__dirname, '..');
 const STAGING = join(ROOT, '.mobile-staging');
 
 // Static export sirasinda devre disi birakilacak klasorler.
+// /giris ve /kayit artik JWT useAuth ile calisiyor; mobil build'e dahil.
 const DISABLE = [
   'app/api',
   'app/admin',
-  'app/giris',
-  'app/kayit',
 ];
 
 function log(step, msg) {
