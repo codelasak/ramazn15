@@ -1,0 +1,9 @@
+# Pano15 iOS — Fastlane Appfile
+#
+# https://docs.fastlane.tools/actions/produce/
+
+app_identifier("com.fennaver.pano15")
+team_id("ZZN6Z5CJ9B")
+
+# App Store Connect API Key (.p8) Fastfile icinde set ediliyor;
+# burada sadece bundle ID + team ID tutuluyor.

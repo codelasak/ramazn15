@@ -57,3 +57,14 @@ next-env.d.ts
 *.jks
 !debug.keystore
 
+# Fastlane / signing secrets
+/secrets/
+**/fastlane/report.xml
+**/fastlane/Preview.html
+**/fastlane/screenshots
+**/fastlane/test_output
+*.p8
+*.p12
+*.mobileprovision
+*.cer
+

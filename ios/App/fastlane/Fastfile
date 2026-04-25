@@ -1,0 +1,160 @@
+# Pano15 iOS — Fastlane lanes
+#
+# Onkosul:
+#   - secrets/AuthKey_<KEY_ID>.p8 (App Store Connect API Key)
+#   - .env.fastlane.local icinde:
+#       APP_STORE_CONNECT_API_KEY_ID
+#       APP_STORE_CONNECT_API_KEY_ISSUER_ID
+#       APP_STORE_CONNECT_API_KEY_FILEPATH
+#       MATCH_PASSWORD
+#       MATCH_GIT_URL (optional, Matchfile default'u override eder)
+#
+# Komutlar:
+#   bundle exec fastlane beta      # TestFlight build + upload
+#   bundle exec fastlane release   # App Store production build + upload
+#   bundle exec fastlane sync_certs   # Sadece match cert/profil sync
+
+default_platform(:ios)
+
+XCODE_PROJECT = "App.xcodeproj"
+XCODE_SCHEME  = "App"
+WORKSPACE     = nil # SPM kullaniyoruz, workspace yok
+
+# secrets/ proje root'unda; ios/App'ten iki dizin yukari.
+SECRETS_DIR = File.expand_path("../../../secrets", __dir__)
+SECRETS_ENV_FILE = File.join(SECRETS_DIR, ".env.fastlane.local")
+
+# Dotenv gem'ine bagimli olmadan secrets/.env.fastlane.local yukle.
+if File.exist?(SECRETS_ENV_FILE)
+  File.read(SECRETS_ENV_FILE).each_line do |line|
+    line = line.strip
+    next if line.empty? || line.start_with?("#")
+    key, value = line.split("=", 2)
+    next unless key && value
+    ENV[key] ||= value.strip
+  end
+end
+
+def load_app_store_api_key
+  key_id    = ENV.fetch("APP_STORE_CONNECT_API_KEY_ID")
+  issuer_id = ENV.fetch("APP_STORE_CONNECT_API_KEY_ISSUER_ID")
+  key_path  = ENV.fetch("APP_STORE_CONNECT_API_KEY_FILEPATH",
+                        File.join(SECRETS_DIR, "AuthKey_#{key_id}.p8"))
+
+  unless File.exist?(key_path)
+    UI.user_error!("API key bulunamadi: #{key_path}")
+  end
+
+  app_store_connect_api_key(
+    key_id: key_id,
+    issuer_id: issuer_id,
+    key_filepath: key_path,
+    duration: 1200,
+    in_house: false
+  )
+end
+
+platform :ios do
+
+  desc "Match: cert + profil sync (appstore)"
+  lane :sync_certs do
+    api_key = load_app_store_api_key
+    match(
+      type: "appstore",
+      readonly: false,
+      api_key: api_key
+    )
+  end
+
+  # Xcode projesini match-installed appstore profile'i kullanacak sekilde
+  # manuel signing'e zorlar. Match her calistiginda sigh_* env'lerini set
+  # eder; bunlardan profile name + UUID'yi okuyup project ayarlarini
+  # guncelleriz.
+  def configure_signing
+    profile_name = ENV.fetch("sigh_com.fennaver.pano15_appstore_profile-name")
+    update_code_signing_settings(
+      use_automatic_signing: false,
+      path: XCODE_PROJECT,
+      targets: [XCODE_SCHEME],
+      profile_name: profile_name,
+      code_sign_identity: "Apple Distribution",
+      team_id: "ZZN6Z5CJ9B",
+      bundle_identifier: "com.fennaver.pano15"
+    )
+  end
+
+  def build_ipa
+    build_app(
+      project: XCODE_PROJECT,
+      scheme: XCODE_SCHEME,
+      configuration: "Release",
+      export_method: "app-store",
+      clean: true,
+      output_directory: "build/fastlane",
+      output_name: "Pano15.ipa",
+      include_bitcode: false,
+      include_symbols: true,
+      export_options: {
+        method: "app-store",
+        provisioningProfiles: {
+          "com.fennaver.pano15" => ENV.fetch("sigh_com.fennaver.pano15_appstore_profile-name")
+        }
+      }
+    )
+  end
+
+  desc "TestFlight'a build + upload"
+  lane :beta do
+    api_key = load_app_store_api_key
+
+    match(
+      type: "appstore",
+      readonly: false,
+      api_key: api_key
+    )
+
+    configure_signing
+
+    # Build numarasini App Store Connect'teki en yuksek + 1 yap.
+    increment_build_number(
+      build_number: latest_testflight_build_number(api_key: api_key, initial_build_number: 0) + 1,
+      xcodeproj: XCODE_PROJECT
+    )
+
+    build_ipa
+
+    upload_to_testflight(
+      api_key: api_key,
+      skip_waiting_for_build_processing: true,
+      changelog: ENV["TESTFLIGHT_CHANGELOG"] || "Hata duzeltmeleri ve iyilestirmeler"
+    )
+  end
+
+  desc "App Store'a production build + upload (manual review submit)"
+  lane :release do
+    api_key = load_app_store_api_key
+
+    match(
+      type: "appstore",
+      readonly: false,
+      api_key: api_key
+    )
+
+    configure_signing
+
+    increment_build_number(
+      build_number: latest_testflight_build_number(api_key: api_key, initial_build_number: 0) + 1,
+      xcodeproj: XCODE_PROJECT
+    )
+
+    build_ipa
+
+    upload_to_app_store(
+      api_key: api_key,
+      skip_metadata: true,
+      skip_screenshots: true,
+      precheck_include_in_app_purchases: false,
+      submit_for_review: false
+    )
+  end
+end

@@ -1,0 +1,17 @@
+# Pano15 iOS — Fastlane Match config
+#
+# Code signing certs + provisioning profiles private GitHub repo'da
+# tutulur; ekibe/CI'a paylasmak icin standart pattern.
+#
+# Kullanim: bundle exec fastlane match appstore
+
+git_url(ENV["MATCH_GIT_URL"] || "https://github.com/codelasak/fennaver-fastlane-match")
+storage_mode("git")
+
+type("appstore") # default; lane'de override edilir
+
+app_identifier(["com.fennaver.pano15"])
+
+# Match git deposunu sifrelemek icin:
+#   export MATCH_PASSWORD="<guclu-bir-sifre>"
+# Bu sifre asla repo'ya commit edilmemelidir; .env.fastlane.local'da tutulabilir.
