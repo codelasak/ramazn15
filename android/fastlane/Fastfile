@@ -1,0 +1,101 @@
+# Pano15 Android — Fastlane lanes (Google Play)
+#
+# Onkosul:
+#   - secrets/play-publisher.json (Google Play API service account key)
+#   - secrets/pano15-release.jks (release upload key)
+#   - secrets/.env.fastlane.local
+#   - JDK 21 (Capacitor 8.x)
+#
+# Komutlar:
+#   bundle exec fastlane internal       # AAB -> Internal testing
+#   bundle exec fastlane production     # AAB -> Production (manual rollout)
+#   bundle exec fastlane build_aab      # Sadece signed AAB build
+
+default_platform(:android)
+
+# secrets/.env.fastlane.local yukle
+SECRETS_ENV_FILE = File.expand_path("../../secrets/.env.fastlane.local", __dir__)
+if File.exist?(SECRETS_ENV_FILE)
+  File.read(SECRETS_ENV_FILE).each_line do |line|
+    line = line.strip
+    next if line.empty? || line.start_with?("#")
+    key, value = line.split("=", 2)
+    next unless key && value
+    ENV[key] ||= value.strip
+  end
+end
+
+# JDK 21 path (Capacitor 8.x kalip-yorum: invalid source release: 21 hatasini onler)
+JDK21 = "/opt/homebrew/opt/openjdk@21"
+
+platform :android do
+
+  desc "Signed release AAB build (sadece bundle, upload yok)"
+  lane :build_aab do
+    gradle(
+      task: "clean bundleRelease",
+      project_dir: "..",
+      properties: {
+        "org.gradle.java.home" => JDK21
+      }
+    )
+  end
+
+  desc "Sadece mevcut AAB'yi internal'a yukle (build atla)"
+  lane :upload_internal do
+    upload_to_play_store(
+      track: "internal",
+      aab: File.expand_path("../app/build/outputs/bundle/release/app-release.aab", __dir__),
+      release_status: "draft",
+      skip_upload_metadata: true,
+      skip_upload_changelogs: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true
+    )
+  end
+
+  desc "AAB build + Internal testing track'a upload"
+  lane :internal do
+    build_aab
+
+    upload_to_play_store(
+      track: "internal",
+      aab: File.expand_path("../app/build/outputs/bundle/release/app-release.aab", __dir__),
+      release_status: "draft",
+      skip_upload_metadata: true,
+      skip_upload_changelogs: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true,
+      validate_only: false
+    )
+  end
+
+  desc "AAB build + Production track'a upload (manual review submit)"
+  lane :production do
+    build_aab
+
+    upload_to_play_store(
+      track: "production",
+      aab: File.expand_path("../app/build/outputs/bundle/release/app-release.aab", __dir__),
+      release_status: "draft",
+      skip_upload_metadata: true,
+      skip_upload_changelogs: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true
+    )
+  end
+
+  desc "Mağaza metadata + screenshot upload (binary atlanir, internal track'a)"
+  lane :metadata do
+    upload_to_play_store(
+      track: "internal",
+      skip_upload_apk: true,
+      skip_upload_aab: true,
+      skip_upload_metadata: false,
+      skip_upload_changelogs: false,
+      skip_upload_images: false,
+      skip_upload_screenshots: false,
+      version_code: 1
+    )
+  end
+end

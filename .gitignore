@@ -53,6 +53,7 @@ next-env.d.ts
 /android/app/build
 /android/local.properties
 /android/captured-screenshots
+/android/keystore.properties
 *.keystore
 *.jks
 !debug.keystore
