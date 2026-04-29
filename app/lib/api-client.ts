@@ -31,6 +31,27 @@ export class ApiError extends Error {
   }
 }
 
+export function friendlyErrorMessage(err: unknown): string {
+  if (err instanceof ApiError) {
+    if (err.status === 401) return "E-posta veya şifre hatalı.";
+    if (err.status === 409) return err.message || "Bu e-posta zaten kayıtlı.";
+    if (err.status === 0) {
+      return "İnternet bağlantınızı kontrol edip tekrar deneyin.";
+    }
+    if (err.status >= 500 && err.status < 600) {
+      return "Sunucuya geçici olarak ulaşılamıyor. Birkaç saniye sonra tekrar deneyin.";
+    }
+    if (err.status >= 400 && err.status < 500) {
+      return err.message || "Geçersiz istek. Lütfen bilgilerinizi kontrol edin.";
+    }
+    return "Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin.";
+  }
+  if (err instanceof Error) {
+    return "Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin.";
+  }
+  return "Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin.";
+}
+
 function buildUrl(path: string): string {
   if (/^https?:\/\//i.test(path)) return path;
   const cleanPath = path.startsWith("/") ? path : `/${path}`;
@@ -226,6 +247,20 @@ async function webRequest(
   return { status: res.status, ok: res.ok, data };
 }
 
+// 5xx retries are skipped for endpoints where retry could create duplicate
+// state (registration) or where the user already gets fast feedback (login —
+// fast 401 beats hanging 8s on a flapping origin).
+const NO_RETRY_PATHS = ["/api/v1/auth/register", "/api/v1/auth/login"];
+
+function shouldRetryServerError(path: string, method: string): boolean {
+  if (NO_RETRY_PATHS.some((p) => path.startsWith(p))) return false;
+  return method === "GET" || method === "PATCH" || method === "DELETE" || method === "PUT";
+}
+
+function delay(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 export async function apiRequest(
   path: string,
   init: RequestInit = {},
@@ -234,8 +269,9 @@ export async function apiRequest(
   const auth = options.auth ?? true;
   const retry = options.retry ?? true;
   const timeoutMs = options.timeoutMs ?? 15000;
+  const method = (init.method ?? "GET").toUpperCase();
 
-  dbg("[apiRequest]", "begin", init.method ?? "GET", path, "auth=" + auth);
+  dbg("[apiRequest]", "begin", method, path, "auth=" + auth);
 
   const headers = new Headers(init.headers);
   if (init.body && !headers.has("Content-Type") && !(init.body instanceof FormData)) {
@@ -258,6 +294,24 @@ export async function apiRequest(
 
   let res = await doRequest();
   dbg("[apiRequest]", "response", "status=" + res.status, "ok=" + res.ok);
+
+  // 5xx retry: cloudflared tunnel can flap; one or two retries with backoff
+  // is cheap insurance. Cap at 2 retries (1.5s + 4s = 5.5s extra worst case).
+  if (
+    retry &&
+    res.status >= 500 &&
+    res.status < 600 &&
+    shouldRetryServerError(path, method)
+  ) {
+    const backoffs = [1500, 4000];
+    for (const backoff of backoffs) {
+      dbg("[apiRequest]", `5xx retry after ${backoff}ms (status=${res.status})`);
+      await delay(backoff);
+      res = await doRequest();
+      dbg("[apiRequest]", "retry response", "status=" + res.status, "ok=" + res.ok);
+      if (res.status < 500) break;
+    }
+  }
 
   if (res.status === 401 && retry && auth) {
     const refreshed = await tryRefresh();

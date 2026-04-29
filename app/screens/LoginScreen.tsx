@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useAuth } from "../lib/auth-context";
-import { ApiError } from "../lib/api-client";
+import { ApiError, friendlyErrorMessage } from "../lib/api-client";
 import { isNativePlatform } from "../lib/platform";
 import { clearDebugLog, dbg } from "../lib/debug-log";
 
@@ -65,15 +65,7 @@ export default function LoginScreen() {
       router.refresh();
     } catch (err) {
       dbg("[login]", "caught error", err instanceof Error ? `${err.name}: ${err.message}` : String(err));
-      if (err instanceof ApiError && err.status === 401) {
-        setError("E-posta veya şifre hatalı.");
-      } else if (err instanceof ApiError) {
-        setError(`API ${err.status}: ${err.message}`);
-      } else if (err instanceof Error) {
-        setError(`Hata: ${err.name} - ${err.message}`);
-      } else {
-        setError(`Bilinmeyen hata: ${String(err)}`);
-      }
+      setError(friendlyErrorMessage(err));
     } finally {
       if (outerTimer) clearTimeout(outerTimer);
       setLoading(false);
@@ -94,7 +86,7 @@ export default function LoginScreen() {
       if (err instanceof ApiError && err.status === 401) {
         setError("Dev hızlı giriş başarısız oldu. Ortam değişkenlerini kontrol edin.");
       } else {
-        setError("Bir hata oluştu. Lütfen tekrar deneyin.");
+        setError(friendlyErrorMessage(err));
       }
     } finally {
       setLoading(false);
@@ -240,21 +232,23 @@ export default function LoginScreen() {
       </div>
 
       {/* Footer */}
-      <div className="relative z-10 pb-6 px-6 text-center">
-        <div className="mx-auto max-w-sm rounded-2xl border border-emerald-100/80 bg-white/60 backdrop-blur p-3.5 text-gray-600">
-          <p className="text-[11px] font-semibold tracking-wide text-emerald-700">Geliştirici Ekibi</p>
-          <p className="mt-1 text-[11px] leading-relaxed text-gray-500">
-            Ahmet Faruk Bahat, Ahmet Talha Kuşak, Ali İsmail Eftekin, Mehmed Ali Cevahir, Musa Bouzantsi
-          </p>
-          <Link
-            href="/developers"
-            className="mt-2 inline-flex items-center gap-1.5 text-[11px] font-semibold text-primary hover:text-primary-dark transition-colors"
+      <div className="relative z-10 pb-6 px-6 text-center space-y-1">
+        <p className="text-xs text-gray-400 dark:text-gray-600">Bahçelievler 15 Temmuz Şehitleri AİHL © 2026</p>
+        <p className="text-xs text-gray-500 dark:text-gray-600 leading-relaxed">
+          <a
+            href="https://fennaver.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-primary hover:underline"
           >
-            <span className="material-icons-round text-sm">groups</span>
-            Tüm geliştiricileri görüntüle
+            Fennaver Akademi
+          </a>
+          {" desteği ile "}
+          <Link href="/developers" className="text-primary hover:underline">
+            Öğrenciler
           </Link>
-        </div>
-        <p className="mt-2 text-xs text-gray-400 dark:text-gray-600">Bahçelievler 15 Temmuz Şehitleri AİHL © 2026</p>
+          {" tarafından geliştirilmiştir."}
+        </p>
       </div>
     </div>
   );

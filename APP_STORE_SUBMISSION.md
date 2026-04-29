@@ -169,7 +169,8 @@ Diğer hiçbir kategori toplanmadı (no Health, Financial, Location, Sensitive, 
 | 1.0 (3) | Account deletion + Program tab + privacy manifest (project ref yoktu) | Processing complete |
 | 1.0 (4) | Dialog overlap fix (items-center + max-h + overflow) | Processing complete |
 | 1.0 (5) | PrivacyInfo.xcprivacy bundle'a dahil edildi | Processing complete |
-| 1.0 (6) | iPhone-only (TARGETED_DEVICE_FAMILY=1) | **Submitted for Review** |
+| 1.0 (6) | iPhone-only (TARGETED_DEVICE_FAMILY=1) | ✅ Approved 2026-04-29 |
+| 1.0.1 (8) | Footer (login+profil), Selim Ulutaş + 0-commit filtre, Program SS fix, 5 SS yenilendi (9:41 status bar, reviewer hesabı) | **Submitted for Review** |
 
 ---
 
@@ -227,5 +228,78 @@ Resolution Center'dan rejection mesajını al, olası senaryolar:
 
 ---
 
-**Submitted at**: 2026-04-26 ~03:15 (Istanbul time)
-**Expected review**: 2026-04-27 / 2026-04-28 içinde sonuç
+**v1.0 (6) submitted at**: 2026-04-26 ~03:15 (Istanbul) — ✅ Approved 2026-04-29
+**v1.0.1 (8) submitted at**: 2026-04-29 ~10:15 (Istanbul) — Apple review bekleniyor
+
+---
+
+## 9. v1.0.1 (8) update — 2026-04-29
+
+**Submitted version**: 1.0.1 (8)
+**Submission status**: ✅ Submitted to App Review (waiting, ETA 24–48h)
+
+### 9.1 Yapılan değişiklikler
+
+**Footer text** — login + profil sayfalarına eklendi:
+> "Fennaver Akademi desteği ile Öğrenciler tarafından geliştirilmiştir."
+- "Fennaver Akademi" → `https://fennaver.com` (external, new tab)
+- "Öğrenciler" → `/developers` (internal route)
+- Dosyalar: `app/screens/LoginScreen.tsx`, `app/screens/ProfileScreen.tsx`
+
+**Geliştirici Ekibi** — `app/developers/page.tsx`:
+- Yeni: **Selim Ulutaş** (`Jselim1`, `/developers/selim.jpg`)
+- Filtre: 0 commit'li geliştiriciler artık **gizleniyor** (önceden "Henüz commit yok" mesajıyla görünüyordu)
+- Sonuç: Ahmet Talha Kuşak (github yok) listede artık yok; geri kalan 5 dev rank/score sırasına göre gösteriliyor
+- Ölü "hasCommits" conditional render kodu temizlendi
+
+### 9.2 Screenshots — 5'i de yenilendi
+
+Hepsi 1320×2868, **9:41 Apple marketing status bar** (status_bar override), **reviewer "Test Öğrenci"** hesabı:
+
+| Slot | İçerik | Değişim |
+|---|---|---|
+| 01_login.png | Login form + yeni footer | Footer eklendi, eski "Geliştirici Ekibi" kart tasarımı kaldırıldı |
+| 02_dashboard.png | "Günaydın, Test" + 12A + namaz + dersler | Reviewer hesabıyla |
+| 03_program.png | Gerçek Ders Programı (Çar - 6 ders) | **Eski "Yakında Geliyor" placeholder gitti** ⚡ kritik fix |
+| 04_ibadet.png | Sonraki Namaz + vakit kartları + Kuran-ı Kerim | Status bar consistency |
+| 05_profil.png | Test Öğrenci, Rol: **Öğrenci** (admin değil) | Önceki SS Eshagh/Yönetici idi, yeni reviewer/student |
+
+Workflow:
+- iPhone 17 Pro Max simulator (UDID `08634FD3-...`)
+- Reviewer manual login (`reviewer@pano15.test`) — keyboard otomasyonu Capacitor WebView üzerinde tutmadı
+- Tab navigation cliclick ile (window pos + content scale calculation)
+- `xcrun simctl status_bar override --time "9:41" --batteryState charged --wifiBars 3 --cellularBars 4`
+- Capture: `xcrun simctl io booted screenshot`
+
+### 9.3 Marketing version bump (1.0 → 1.0.1)
+
+İlk `fastlane release` denemesi şu hatayla reddedildi:
+> The version number has been previously used. - /data/attributes/versionString
+
+**Sebep**: v1.0 zaten App Store'da live; ASC editable version oluşturmuyor. Yeni binary için yeni marketing version gerek.
+
+**Çözüm**:
+- `agvtool new-marketing-version 1.0.1` (Info.plist literal substitution sorunu yarattı, geri alındı)
+- `Info.plist` `CFBundleShortVersionString = $(MARKETING_VERSION)` korundu
+- `App.xcodeproj/project.pbxproj` içinde `MARKETING_VERSION = 1.0` → `1.0.1` (sed)
+- `CFBundleVersion` fastlane otomatik bumpladı: 7 → 8 (latest_testflight_build_number + 1)
+
+### 9.4 Fastlane akışı
+
+```
+fastlane release   →  match + signing + build_app + upload_to_app_store
+                      precheck ✅ (no negative sentiment, no broken URLs vb.)
+                      Build app: 12s, Upload: 128s
+fastlane metadata  →  upload_to_app_store (binary skip)
+                      5 eski SS deleted, 5 yeni SS uploaded
+                      tr metadata + reviewer info upload
+```
+
+`run_precheck_before_submit: false`, `submit_for_review: false` → Submit manuel App Store Connect web UI üzerinden yapıldı.
+
+### 9.5 Bu iterasyonda öğrenilen
+
+- **App Store live versionu varken aynı versionString'e binary yüklenemez** → marketing bump zorunlu
+- **agvtool Info.plist'teki $(VAR) referansını literal'e çevirir** → manuel restore + pbxproj edit gerek
+- **Capacitor WebView'da macOS HW keyboard girişi tutmuyor** → screenshot otomasyonu için manuel login adımı şart
+- **Static export + AppShell**: /developers sayfasındaki bottom tab bar tap'leri navigasyon yapmıyor (router ile geri dönmek için Profil tab'ından Çıkış Yap fonksiyonu gerekti)

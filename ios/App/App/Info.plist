@@ -21,7 +21,7 @@
 	<key>CFBundleShortVersionString</key>
 	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleVersion</key>
-	<string>6</string>
+	<string>8</string>
 	<!-- Export Compliance: Pano15 sadece iOS'in dahili HTTPS/TLS sifrelemesini
 	     kullanir; kendi standart-disi veya proprietary kripto algoritmasi
 	     uygulamaz. Bu yuzden encryption export exemption'a tabidir. -->

@@ -33,6 +33,11 @@ const DEVELOPERS: Developer[] = [
     image: "/developers/musa.jpg",
     github: "MosesTR",
   },
+  {
+    name: "Selim Ulutaş",
+    image: "/developers/selim.jpg",
+    github: "Jselim1",
+  },
 ];
 
 async function getContributors(): Promise<ContributorData[]> {
@@ -133,15 +138,14 @@ export default async function DevelopersPage() {
     statsMap.set(c.login, c);
   }
 
-  // Sort developers: those with commits first (by score desc), then those without
-  const sorted = [...DEVELOPERS].sort((a, b) => {
-    const sa = a.github ? statsMap.get(a.github)?.score ?? -1 : -1;
-    const sb = b.github ? statsMap.get(b.github)?.score ?? -1 : -1;
-    return sb - sa;
-  });
-
-  // Assign ranks only to developers with commits
-  let rank = 0;
+  // Only show developers with at least one commit; sort by score desc
+  const sorted = DEVELOPERS
+    .filter((d) => (d.github ? (statsMap.get(d.github)?.commits ?? 0) > 0 : false))
+    .sort((a, b) => {
+      const sa = statsMap.get(a.github!)?.score ?? 0;
+      const sb = statsMap.get(b.github!)?.score ?? 0;
+      return sb - sa;
+    });
 
   return (
     <AppShell>
@@ -163,26 +167,22 @@ export default async function DevelopersPage() {
         </header>
 
         <main className="px-4 pb-8 pt-5 space-y-3">
-          {sorted.map((developer) => {
-            const stats = developer.github
-              ? statsMap.get(developer.github)
-              : undefined;
-            const hasCommits = stats && stats.commits > 0;
-            const currentRank = hasCommits ? rank++ : -1;
-            const style = getRankStyle(currentRank);
+          {sorted.map((developer, index) => {
+            const stats = statsMap.get(developer.github!)!;
+            const style = getRankStyle(index);
+            const maxScore = Math.max(
+              ...sorted.map((d) => statsMap.get(d.github!)?.score ?? 0),
+              1
+            );
 
             return (
               <article
                 key={developer.name}
-                className={`bg-white dark:bg-gray-900 rounded-2xl border ${
-                  hasCommits ? style.border : "border-gray-100 dark:border-gray-800"
-                } shadow-sm p-4 transition-all`}
+                className={`bg-white dark:bg-gray-900 rounded-2xl border ${style.border} shadow-sm p-4 transition-all`}
               >
                 <div className="flex items-center gap-4">
                   <div
-                    className={`relative h-14 w-14 shrink-0 overflow-hidden rounded-full ring-2 ${
-                      hasCommits ? style.ring : "ring-gray-100 dark:ring-gray-700"
-                    }`}
+                    className={`relative h-14 w-14 shrink-0 overflow-hidden rounded-full ring-2 ${style.ring}`}
                   >
                     <Image
                       src={developer.image}
@@ -203,71 +203,46 @@ export default async function DevelopersPage() {
                       </h2>
                     </div>
 
-                    {hasCommits ? (
-                      <div className="flex items-center gap-3 mt-1.5">
-                        <span className="inline-flex items-center gap-1 text-xs font-medium text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30 px-2 py-0.5 rounded-full">
-                          <span className="material-icons-round text-[14px]">
-                            commit
-                          </span>
-                          {stats.commits}
+                    <div className="flex items-center gap-3 mt-1.5">
+                      <span className="inline-flex items-center gap-1 text-xs font-medium text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30 px-2 py-0.5 rounded-full">
+                        <span className="material-icons-round text-[14px]">
+                          commit
                         </span>
-                        {stats.additions > 0 && (
-                          <span className="text-xs font-medium text-green-600 dark:text-green-400">
-                            +{stats.additions.toLocaleString("tr-TR")}
-                          </span>
-                        )}
-                        {stats.deletions > 0 && (
-                          <span className="text-xs font-medium text-red-500 dark:text-red-400">
-                            -{stats.deletions.toLocaleString("tr-TR")}
-                          </span>
-                        )}
-                      </div>
-                    ) : (
-                      <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
-                        Henüz commit yok
-                      </p>
-                    )}
+                        {stats.commits}
+                      </span>
+                      {stats.additions > 0 && (
+                        <span className="text-xs font-medium text-green-600 dark:text-green-400">
+                          +{stats.additions.toLocaleString("tr-TR")}
+                        </span>
+                      )}
+                      {stats.deletions > 0 && (
+                        <span className="text-xs font-medium text-red-500 dark:text-red-400">
+                          -{stats.deletions.toLocaleString("tr-TR")}
+                        </span>
+                      )}
+                    </div>
                   </div>
 
-                  {hasCommits && (
-                    <div className="text-right shrink-0">
-                      <div className="text-lg font-bold text-emerald-600 dark:text-emerald-400">
-                        {stats.score}
-                      </div>
-                      <div className="text-[10px] text-gray-400 dark:text-gray-500 font-medium uppercase tracking-wider">
-                        puan
-                      </div>
+                  <div className="text-right shrink-0">
+                    <div className="text-lg font-bold text-emerald-600 dark:text-emerald-400">
+                      {stats.score}
                     </div>
-                  )}
+                    <div className="text-[10px] text-gray-400 dark:text-gray-500 font-medium uppercase tracking-wider">
+                      puan
+                    </div>
+                  </div>
                 </div>
 
-                {/* Contribution bar */}
-                {hasCommits && (
-                  <div className="mt-3">
-                    <div className="h-1.5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
-                      <div
-                        className="h-full bg-linear-to-r from-emerald-400 to-teal-500 rounded-full transition-all duration-500"
-                        style={{
-                          width: `${Math.min(
-                            100,
-                            (stats.score /
-                              Math.max(
-                                ...sorted
-                                  .map((d) =>
-                                    d.github
-                                      ? statsMap.get(d.github)?.score ?? 0
-                                      : 0
-                                  )
-                                  .filter(Boolean),
-                                1
-                              )) *
-                              100
-                          )}%`,
-                        }}
-                      />
-                    </div>
+                <div className="mt-3">
+                  <div className="h-1.5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-linear-to-r from-emerald-400 to-teal-500 rounded-full transition-all duration-500"
+                      style={{
+                        width: `${Math.min(100, (stats.score / maxScore) * 100)}%`,
+                      }}
+                    />
                   </div>
-                )}
+                </div>
               </article>
             );
           })}

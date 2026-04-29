@@ -463,6 +463,25 @@ export default function ProfileScreen() {
           <div className="text-center pb-8 space-y-1">
             <p className="text-xs text-gray-400 dark:text-gray-600">15 Temmuz AİHL v1.0</p>
             <p className="text-xs text-gray-300">Bahçelievler 15 Temmuz Şehitleri AİHL © 2026</p>
+            <p className="text-xs text-gray-500 dark:text-gray-600 leading-relaxed pt-2">
+              <a
+                href="https://fennaver.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-emerald-600 hover:underline"
+              >
+                Fennaver Akademi
+              </a>
+              {" desteği ile "}
+              <button
+                type="button"
+                onClick={() => router.push("/developers")}
+                className="text-emerald-600 hover:underline"
+              >
+                Öğrenciler
+              </button>
+              {" tarafından geliştirilmiştir."}
+            </p>
           </div>
         </main>
       </div>

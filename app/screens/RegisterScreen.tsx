@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useAuth } from "../lib/auth-context";
-import { ApiError } from "../lib/api-client";
+import { friendlyErrorMessage } from "../lib/api-client";
 import { isNativePlatform } from "../lib/platform";
 
 const CLASS_OPTIONS = [
@@ -95,11 +95,7 @@ export default function RegisterScreen() {
       router.push("/");
       router.refresh();
     } catch (err) {
-      if (err instanceof ApiError) {
-        setError(err.message);
-      } else {
-        setError("Bir hata oluştu. Lütfen tekrar deneyin.");
-      }
+      setError(friendlyErrorMessage(err));
     } finally {
       setLoading(false);
     }
@@ -363,20 +359,7 @@ export default function RegisterScreen() {
       </div>
 
       <div className="relative z-10 pb-6 px-6 text-center">
-        <div className="mx-auto max-w-sm rounded-2xl border border-emerald-100/80 bg-white/60 backdrop-blur p-3.5 text-gray-600">
-          <p className="text-[11px] font-semibold tracking-wide text-emerald-700">Geliştirici Ekibi</p>
-          <p className="mt-1 text-[11px] leading-relaxed text-gray-500">
-            Ahmet Faruk Bahat, Ahmet Talha Kuşak, Ali İsmail Eftekin, Mehmed Ali Cevahir, Musa Bouzantsi
-          </p>
-          <Link
-            href="/developers"
-            className="mt-2 inline-flex items-center gap-1.5 text-[11px] font-semibold text-primary hover:text-primary-dark transition-colors"
-          >
-            <span className="material-icons-round text-sm">groups</span>
-            Tüm geliştiricileri görüntüle
-          </Link>
-        </div>
-        <p className="mt-2 text-xs text-gray-400 dark:text-gray-600">Bahçelievler 15 Temmuz Şehitleri AİHL © 2026</p>
+        <p className="text-xs text-gray-400 dark:text-gray-600">Bahçelievler 15 Temmuz Şehitleri AİHL © 2026</p>
       </div>
     </div>
   );

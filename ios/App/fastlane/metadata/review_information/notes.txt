@@ -1,34 +1,60 @@
 Pano15 is a private utility app for students of a single Turkish religious vocational high school (Bahçelievler 15 Temmuz Şehitleri Anadolu İmam Hatip Lisesi) in Istanbul.
 
-WHY ACCOUNT IS REQUIRED:
-The core value (mock-exam tracking, personalized study schedule, profile, prayer notifications) is tied to a student account. Demo credentials provided.
+—— RESPONSE TO PREVIOUS REJECTION (1.0(6), Submission ID 96f4ac55-9aba-4f72-8e62-69a81ffc6e0d) ——
 
-DEMO ACCOUNT (student role, class 12A, day-student):
+Thank you for the detailed feedback. We confirmed the root cause of both reported issues was a 34-minute outage of our origin server's Cloudflare tunnel that coincided exactly with your review window (Apr 28, 2026 13:46–14:20 UTC). This caused HTTP 530 ("Origin Unreachable") for both login and registration attempts — our credentials were correct, but the requests never reached our backend.
+
+WHAT WE FIXED in 1.0(7):
+1. Infrastructure: confirmed the API process and the Cloudflare tunnel both run as systemd units with Restart=always.
+2. Watchdog: a new systemd timer pings our public endpoint every minute. After 2 consecutive failures it alerts on-call; after 3, it auto-restarts the services.
+3. Client resilience: the app now auto-retries server (5xx) errors twice with exponential backoff (1.5s, 4s) on safe endpoints.
+4. Error UX: replaced raw "HTTP 530" error messages with friendly Turkish copy guiding the user to retry.
+
+We have verified sustained green uptime against this build before resubmitting. We monitor 24/7 and will respond within minutes if any issue arises.
+
+—— DEMO ACCOUNT ——
+
 Username: reviewer@pano15.test
 Password: Pano15Reviewer2026!
 
-HOW TO REVIEW (5 minutes):
+(Role: student, Class: 12A, Department: Teknoloji ve Fen Bilimleri, day-student.
+Pre-seeded with weekly schedule, prayer times, meal menus, and announcements.)
+
+—— HOW TO REVIEW (5 minutes) ——
+
 1. Launch app — splash → login screen
-2. Login with demo credentials
+2. Login with the credentials above
 3. Bottom nav, tap each tab:
-   - Ana Sayfa: dashboard with prayer-time countdown, today's classes, study sessions
-   - Program: full week class schedule for 12A (Mon-Fri tabs)
-   - Takip: mock-exam tracker, tap + to add a sample result
-   - Ibadet: prayer times + Quran reader (tap "Dinle" on a verse for audio)
-   - Profil: profile info; "Hesabimi Sil" button at bottom satisfies Guideline 5.1.1(v)
+   - Ana Sayfa: dashboard with prayer-time countdown, today's classes
+   - Program: full week class schedule for 12A (Mon–Fri tabs)
+   - İbadet: prayer times + Quran reader (tap "Dinle" on a verse for audio)
+   - Beslenme: school meal menu
+   - Profil: profile info; "Hesabımı Sil" button at bottom satisfies Guideline 5.1.1(v)
 
 ACCOUNT DELETION:
-Profile tab > "Hesabimi Sil" > type "SIL" to confirm > account + all data permanently deleted.
+Profile tab → "Hesabımı Sil" → type "SİL" to confirm → account + all data permanently deleted.
 
-THIRD-PARTY APIs (read-only, no PII sent):
+REGISTRATION (alternative test path):
+Login screen → "Kayıt Ol" → enter any name/email/password (≥6 chars) → select class (e.g., 9D) and department → choose Yurtlu/Evci → "Kayıt Ol".
+
+IF YOU ENCOUNTER ANY ERROR:
+Please tap the action again — the app retries automatically, and our infrastructure recovers within 60 seconds. If still failing, please email eshagh@fennaver.com (we monitor 24/7 during review).
+
+—— iPad NOTE ——
+
+Pano15 is iPhone-only (UIDeviceFamily = 1). On iPad it runs in iPhone-compatibility window — this is intentional and expected. The school distributes iPhones to its students.
+
+—— THIRD-PARTY APIs (read-only, no PII sent) ——
+
 - diyanet.gov.tr (Turkish official prayer times)
 - api.alquran.cloud (Quran text + audio recitations)
 - nominatim.openstreetmap.org (district lookup)
 
-DEFAULT LOCATION: Istanbul (district 9541), target audience is Istanbul-based.
+Default location: Istanbul (district 9541), target audience is Istanbul-based.
 
 NO IAP. NO ADS. NO TRACKING. NO THIRD-PARTY ANALYTICS SDKs.
 
 Privacy: https://15temmuz.fennaver.tech/privacy
 Support: https://15temmuz.fennaver.tech/destek
 Contact: eshagh@fennaver.com
+Phone: +90 534 962 5225
