@@ -1,16 +1,16 @@
-import { neon } from "@neondatabase/serverless";
 import "dotenv/config";
+import { Pool } from "pg";
 
 async function wipeDB() {
-  const sql = neon(process.env.DATABASE_URL!);
+  const pool = new Pool({ connectionString: process.env.DATABASE_URL! });
 
   console.log("Dropping all tables and types...");
 
-  await sql`DROP SCHEMA public CASCADE`;
-  await sql`CREATE SCHEMA public`;
-  await sql`GRANT ALL ON SCHEMA public TO neondb_owner`;
-  await sql`GRANT ALL ON SCHEMA public TO public`;
+  await pool.query("DROP SCHEMA public CASCADE");
+  await pool.query("CREATE SCHEMA public");
+  await pool.query("GRANT ALL ON SCHEMA public TO public");
 
+  await pool.end();
   console.log("Database wiped successfully!");
 }
 
